@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import services.SearchService;
+
 
 public class SearchActivity extends Activity {
 
@@ -39,11 +41,12 @@ public class SearchActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /*public void sendMessage(View view){
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.edit_message);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
+    public void search(View view) {
+        EditText editText = (EditText) findViewById(R.id.search_query);
+        String query = editText.getText().toString();
+
+        Intent intent = new Intent(this, ListItemsActivity.class);
+        intent.putExtra(SearchService.SEARCH_PARAM, query);
         startActivity(intent);
-    }*/
+    }
 }

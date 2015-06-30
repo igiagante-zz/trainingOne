@@ -1,9 +1,13 @@
 package model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 /**
  * Created by igiagante on 29/6/15.
  */
-public class Paging {
+public class Paging  implements Parcelable {
 
     private Integer total;
     private Integer offset;
@@ -37,5 +41,35 @@ public class Paging {
 
     public void setLimit(Integer limit) {
         this.limit = limit;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(total);
+        dest.writeInt(offset);
+        dest.writeInt(limit);
+
+        Log.d("Parcel", dest.toString());
+    }
+
+    public static final Parcelable.Creator<Paging> CREATOR = new Parcelable.Creator<Paging>() {
+        public Paging createFromParcel(Parcel in) {
+            return new Paging(in);
+        }
+
+        public Paging[] newArray(int size) {
+            return new Paging[size];
+        }
+    };
+
+    private Paging(Parcel in) {
+        total = in.readInt();
+        offset = in.readInt();
+        limit = in.readInt();
     }
 }

@@ -25,6 +25,9 @@
             android:name="services.SearchService"
             android:exported="false" >
         </service>
+
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>
