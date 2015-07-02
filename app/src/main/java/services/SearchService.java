@@ -91,7 +91,7 @@ public class SearchService extends IntentService {
         return search;
     }
 
-    private static Search parseJsonResult(String result){
+    public static Search parseJsonResult(String result){
 
         Search search = new Search();
         ArrayList<Item> items = new ArrayList<>();

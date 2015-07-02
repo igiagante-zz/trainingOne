@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
@@ -40,6 +42,9 @@ public class ListItemsActivity extends Activity {
                         items = search.getItems();
                         mAdapter.setItems(items);
                         mAdapter.notifyDataSetChanged();
+
+                        ProgressBar pb = (ProgressBar) findViewById(R.id.progress_bar);
+                        pb.setVisibility(View.INVISIBLE);
                     } else {
                         Log.d("items", "not found");
                     }
@@ -55,6 +60,9 @@ public class ListItemsActivity extends Activity {
         setContentView(R.layout.activity_main);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
+        ProgressBar pb = (ProgressBar) findViewById(R.id.progress_bar);
+        pb.setVisibility(View.VISIBLE);
+
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
@@ -63,16 +71,9 @@ public class ListItemsActivity extends Activity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-//        items = new ArrayList<>();
-//        items.add(new Item("title", "price", "thumbnail", false));
-//        items.add(new Item("title", "price", "thumbnail", false));
-//        items.add(new Item("title", "price", "thumbnail", false));
-//
         mAdapter = new MyAdapter(items, this);
         mRecyclerView.setAdapter(mAdapter);
 
-       // mRecyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.HORIZONTAL_LIST));
-        //mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         // Get param from search activity
@@ -83,6 +84,8 @@ public class ListItemsActivity extends Activity {
         intentService.setAction(SearchService.ACTION_SEARCH);
         intentService.putExtra(SearchService.SEARCH_PARAM, query);
         startService(intentService);
+
+        setProgressBarVisibility(true);
     }
 
     @Override

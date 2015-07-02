@@ -3,11 +3,14 @@ package com.example.igiagante.trainingone;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -58,15 +61,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
 
     @Override
     public void onBindViewHolder(ItemViewHolder itemViewHolder, int position) {
-        //Uri uri = Uri.parse(items.get(position).getThumbnail());
-//            Context context = itemViewHolder.imageItem.getContext();
-//            Picasso.with(context)
-//                    .load(items.get(position).getThumbnail())
-//                    .into(itemViewHolder.imageItem);
 
-            //itemViewHolder.imageItem.setImageBitmap(bitmap);
-            itemViewHolder.txtTittle.setText(items.get(position).getTitle());
-            itemViewHolder.txtPrice.setText(items.get(position).getPrice());
+        //Download image using picasso library
+        Picasso.with(context).load(items.get(position).getThumbnail())
+                .error(R.drawable.placeholder)
+                .placeholder(R.drawable.placeholder)
+                .into(itemViewHolder.imageItem);
+
+        //itemViewHolder.imageItem.setImageBitmap(bitmap);
+        itemViewHolder.txtTittle.setText(items.get(position).getTitle());
+        itemViewHolder.txtPrice.setText(items.get(position).getPrice());
+        if(items.get(position).getShipping()){
+            itemViewHolder.shippingIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.shipping_yes));
+        }
+
 
 //            if (position/2 == 0){
 //                itemViewHolder.cardView.setCardBackgroundColor(context.getResources().getColor(android.R.color.holo_red_dark));

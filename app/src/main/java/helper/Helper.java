@@ -21,7 +21,6 @@ public class Helper {
         HttpsURLConnection urlConnection = null;
 
         try{
-
             /* forming th java.net.URL object */
             urlConnection = (HttpsURLConnection) url.openConnection();
             /* optional request header */
