@@ -53,7 +53,9 @@ public class Search implements Parcelable {
 
     private Search(Parcel in) {
         in.readTypedList(items, Item.CREATOR);
-        paging = in.readParcelable(Paging.class.getClassLoader());
+        ClassLoader loader = Paging.class.getClassLoader();
+       // System.out.println("loader: " + loader.toString());
+        paging = (Paging)in.readParcelable(loader);
     }
 
     public Search() {
