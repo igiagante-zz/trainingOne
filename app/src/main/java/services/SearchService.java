@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import helper.Helper;
 import model.Item;
 import model.Paging;
 import model.Search;
@@ -74,38 +75,13 @@ public class SearchService extends IntentService {
 
     private Search get(String query){
 
-        InputStream inputStream = null;
-        HttpsURLConnection urlConnection = null;
-
         String dir = "https://api.mercadolibre.com/sites/MLA/search?q="+ query +"&offset=0&limit=10";
         Search search = null;
         try{
             URL url = new URL(dir);
 
-            /* forming th java.net.URL object */
-            urlConnection = (HttpsURLConnection) url.openConnection();
-            /* optional request header */
-            urlConnection.setRequestProperty("Content-Type", "application/json");
-
-            /* optional request header */
-            urlConnection.setRequestProperty("Accept", "application/json");
-
-            /* for Get request */
-            urlConnection.setRequestMethod("GET");
-            int statusCode = urlConnection.getResponseCode();
-
-            /* 200 represents HTTP OK */
-            if (statusCode == 200) {
-                inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                String response = convertInputStreamToString(inputStream);
-                Log.d("response", response);
-                search = parseJsonResult(response);
-                Log.d("Title", search.getItems().get(0).getTitle());
-                return search;
-            } else {
-                Log.d("error", "todo mal");
-                //throw new SearchException("Failed to fetch data!!");
-            }
+            String response = Helper.get(url);
+            search = parseJsonResult(response);
 
         }catch (IOException ioe){
             System.out.println("Error: " + ioe.getMessage());
@@ -113,24 +89,6 @@ public class SearchService extends IntentService {
         }
 
         return search;
-    }
-
-    private String convertInputStreamToString(InputStream inputStream) throws IOException {
-
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        String line = "";
-        String result = "";
-
-        while ((line = bufferedReader.readLine()) != null) {
-            result += line;
-        }
-
-            /* Close Stream */
-        if (null != inputStream) {
-            inputStream.close();
-        }
-
-        return result;
     }
 
     private static Search parseJsonResult(String result){

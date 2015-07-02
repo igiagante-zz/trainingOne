@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -23,7 +25,8 @@ public class ListItemsActivity extends Activity {
     private ArrayList<Item> items;
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private MyAdapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
 
@@ -31,20 +34,15 @@ public class ListItemsActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
-                Search search = (Search) bundle.getParcelable(SearchService.RESULT);
-                if (search != null) {
-
-                    Log.d("Title", search.getItems().get(0).getTitle());
-
-                    items = search.getItems();
-
-                    setContentView(R.layout.activity_list_items);
-                    mRecyclerView = (RecyclerView) findViewById(R.id.list_item_view);
-
-                    mAdapter = new MyAdapter(items);
-                    mRecyclerView.setAdapter(mAdapter);
-                } else {
-                    Log.d("items", "not found");
+                if(intent.getAction() == SearchService.NOTIFICATION){
+                    Search search = (Search) bundle.getParcelable(SearchService.RESULT);
+                    if (search != null) {
+                        items = search.getItems();
+                        mAdapter.setItems(items);
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.d("items", "not found");
+                    }
                 }
             }
         }
@@ -53,6 +51,29 @@ public class ListItemsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        mRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+//        items = new ArrayList<>();
+//        items.add(new Item("title", "price", "thumbnail", false));
+//        items.add(new Item("title", "price", "thumbnail", false));
+//        items.add(new Item("title", "price", "thumbnail", false));
+//
+        mAdapter = new MyAdapter(items, this);
+        mRecyclerView.setAdapter(mAdapter);
+
+       // mRecyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.HORIZONTAL_LIST));
+        //mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         // Get param from search activity
         Intent intent = getIntent();
@@ -73,7 +94,7 @@ public class ListItemsActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
+        // Handle action bar card_view clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();

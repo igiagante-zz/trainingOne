@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Search implements Parcelable {
 
     private ArrayList<Item> items = new ArrayList<>();
-    private Paging paging;
+    private Paging paging = new Paging();
 
     public ArrayList<Item> getItems() {
         return items;
@@ -52,10 +52,9 @@ public class Search implements Parcelable {
     };
 
     private Search(Parcel in) {
-        in.readTypedList(items, Item.CREATOR);
-        ClassLoader loader = Paging.class.getClassLoader();
-       // System.out.println("loader: " + loader.toString());
-        paging = (Paging)in.readParcelable(loader);
+        in.readList(items, this.getClass().getClassLoader());
+        Parcel parcel = Parcel.obtain();
+        paging = Paging.CREATOR.createFromParcel(parcel);
     }
 
     public Search() {

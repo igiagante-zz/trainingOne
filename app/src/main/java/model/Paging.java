@@ -13,6 +13,8 @@ public class Paging  implements Parcelable {
     private Integer offset;
     private Integer limit;
 
+    public Paging(){}
+
     public Paging(Integer total, Integer offset, Integer limit){
         this.total = total;
         this.offset = offset;
