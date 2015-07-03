@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">TrainingOne</string>
+    <string name="app_name">Test</string>
 
     <string name="edit_message">item</string>
     <string name="button_search">Search</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_list_items">ListItemsActivity</string>
+    <string name="title_activity_list_items">Items</string>
 
     <string name="item_image">Item Image</string>
 </resources>

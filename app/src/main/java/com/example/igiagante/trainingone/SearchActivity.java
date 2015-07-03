@@ -18,7 +18,13 @@ public class SearchActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.query_view);
+
+        if( savedInstanceState != null ) {
+            TextView textView = (TextView) findViewById(R.id.search_query);
+            textView.setText(savedInstanceState.getString("search_query"));
+        }
 
         Button button = (Button) findViewById(R.id.button_search);
         button.setOnClickListener(new View.OnClickListener() {
@@ -58,7 +64,9 @@ public class SearchActivity extends Activity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-
+        super.onSaveInstanceState(outState);
+        TextView textView = (TextView) findViewById(R.id.search_query);
+        outState.putString("search_query", textView.getText().toString());
     }
 
     public void search() {

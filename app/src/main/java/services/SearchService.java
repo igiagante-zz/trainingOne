@@ -43,18 +43,41 @@ public class SearchService extends IntentService {
     public static final String RESULT = "result";
     public static final String NOTIFICATION = "training.service.receiver";
 
+    boolean success;
+    boolean stopped;
+
+    private int offset = 0;
+    private int limit = 10;
+
     public SearchService() {
         super("SearchService");
+        success = false;
+        stopped = false;
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        if(stopped){
+            Log.d("Destroy", "destroy success");
+            return;
+        }
+
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_SEARCH.equals(action)) {
                 final String query = intent.getStringExtra(SEARCH_PARAM);
                 handleActionSearch(query);
             }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopped = true;
+        if(success){
+            Log.d("Destroy", "destroy success");
         }
     }
 
@@ -71,6 +94,9 @@ public class SearchService extends IntentService {
         Intent intent = new Intent(NOTIFICATION);
         intent.putExtra(RESULT, result);
         sendBroadcast(intent);
+        success = true;
+        offset += 10;
+        limit += 10;
     }
 
     private Search get(String query){
@@ -79,10 +105,14 @@ public class SearchService extends IntentService {
 
         try{
             String queryEncoded = URLEncoder.encode(query, "UTF-8");
-            String dir = "https://api.mercadolibre.com/sites/MLA/search?q="+ queryEncoded +"&offset=0&limit=10";
+            String dir = "https://api.mercadolibre.com/sites/MLA/search?q="+ queryEncoded +"&offset="+ offset +"&limit="+ limit;
+
+            Log.d("url", dir);
+
             URL url = new URL(dir);
 
             String response = Helper.get(url);
+            Log.d("response", response);
             search = parseJsonResult(response);
 
         }catch (IOException ioe){

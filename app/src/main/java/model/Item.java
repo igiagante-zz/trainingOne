@@ -63,9 +63,7 @@ public class Item implements Parcelable {
         dest.writeString(title);
         dest.writeString(price);
         dest.writeString(thumbnail);
-        dest.writeInt(shipping ? 1 : 0); //if myBoolean == true, byte == 1
-
-        Log.d("Parcel", dest.toString());
+        dest.writeInt(shipping ? 1 : 0);
     }
 
     public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {

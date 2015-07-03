@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import model.Item;
 import model.Search;
 import services.SearchService;
+import views.EndlessRecyclerOnScrollListener;
 
 
 public class ListItemsActivity extends Activity {
@@ -28,7 +29,7 @@ public class ListItemsActivity extends Activity {
 
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
 
@@ -36,7 +37,7 @@ public class ListItemsActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
-                if(intent.getAction() == SearchService.NOTIFICATION){
+                if(intent.getAction().equals(SearchService.NOTIFICATION)){
                     Search search = (Search) bundle.getParcelable(SearchService.RESULT);
                     if (search != null) {
                         items = search.getItems();
@@ -71,21 +72,21 @@ public class ListItemsActivity extends Activity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(mLayoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                Log.d("onLoadMore", "loading more data");
+                getData();
+            }
+        });
+
         mAdapter = new MyAdapter(items, this);
         mRecyclerView.setAdapter(mAdapter);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         // Get param from search activity
-        Intent intent = getIntent();
-        String query = intent.getStringExtra(SearchService.SEARCH_PARAM);
-
-        Intent intentService = new Intent(this, SearchService.class);
-        intentService.setAction(SearchService.ACTION_SEARCH);
-        intentService.putExtra(SearchService.SEARCH_PARAM, query);
-        startService(intentService);
-
-        setProgressBarVisibility(true);
+        getData();
     }
 
     @Override
@@ -120,5 +121,15 @@ public class ListItemsActivity extends Activity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
+    }
+
+    private void getData(){
+        Intent intent = getIntent();
+        String query = intent.getStringExtra(SearchService.SEARCH_PARAM);
+
+        Intent intentService = new Intent(this, SearchService.class);
+        intentService.setAction(SearchService.ACTION_SEARCH);
+        intentService.putExtra(SearchService.SEARCH_PARAM, query);
+        startService(intentService);
     }
 }

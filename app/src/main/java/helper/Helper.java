@@ -32,7 +32,6 @@ public class Helper {
             /* for Get request */
             urlConnection.setRequestMethod("GET");
             int statusCode = urlConnection.getResponseCode();
-
             /* 200 represents HTTP OK */
             if (statusCode == 200) {
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
@@ -43,9 +42,8 @@ public class Helper {
                 //throw new SearchException("Failed to fetch data!!");
             }
 
-        }catch (IOException ioe){
-            System.out.println("Error: " + ioe.getMessage());
-            System.out.println(ioe.getStackTrace());
+        }catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
         }
         return "";
     }
