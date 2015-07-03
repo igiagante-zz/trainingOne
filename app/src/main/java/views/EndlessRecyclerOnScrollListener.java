@@ -42,6 +42,20 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
                 previousTotal = totalItemCount;
             }
         }
+
+        int a = totalItemCount - visibleItemCount;
+        int b = firstVisibleItem + visibleThreshold;
+        boolean dif = a <= b;
+
+        Log.d("dif", String.valueOf(dif));
+
+        Log.d("totalItemCount", String.valueOf(totalItemCount));
+        Log.d("visibleItemCount", String.valueOf(visibleItemCount));
+        Log.d("firstVisibleItem", String.valueOf(firstVisibleItem));
+        Log.d("visibleThreshold", String.valueOf(visibleThreshold));
+
+        Log.d("loading", String.valueOf(loading));
+
         if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
             // End has been reached
 
