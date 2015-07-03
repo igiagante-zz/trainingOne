@@ -55,8 +55,6 @@ public class Paging  implements Parcelable {
         dest.writeInt(total);
         dest.writeInt(offset);
         dest.writeInt(limit);
-
-        Log.d("Parcel", dest.toString());
     }
 
     public static final Parcelable.Creator<Paging> CREATOR = new Parcelable.Creator<Paging>() {

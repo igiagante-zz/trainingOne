@@ -12,9 +12,9 @@
         android:hint="@string/edit_message" />
 
     <Button
+        android:id="@+id/button_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="@string/button_search"
-        android:onClick="search"/>
+        android:hint="@string/button_search"/>
 
 </LinearLayout>

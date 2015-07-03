@@ -55,7 +55,6 @@
                 android:layout_height="20dp"
                 android:layout_marginRight="2dip"
                 android:contentDescription="@string/item_image"
-                android:src="@drawable/shipping_yes"
                 android:layout_alignParentRight="true"
                 android:layout_alignWithParentIfMissing="true"
                 android:layout_below="@id/title"

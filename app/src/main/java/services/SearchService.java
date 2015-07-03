@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -63,7 +64,6 @@ public class SearchService extends IntentService {
      */
     private void handleActionSearch(String query) {
         Search result = get(query);
-        Log.d("result ", "todo ok");
         publishResults(result);
     }
 
@@ -75,9 +75,11 @@ public class SearchService extends IntentService {
 
     private Search get(String query){
 
-        String dir = "https://api.mercadolibre.com/sites/MLA/search?q="+ query +"&offset=0&limit=10";
         Search search = null;
+
         try{
+            String queryEncoded = URLEncoder.encode(query, "UTF-8");
+            String dir = "https://api.mercadolibre.com/sites/MLA/search?q="+ queryEncoded +"&offset=0&limit=10";
             URL url = new URL(dir);
 
             String response = Helper.get(url);
@@ -134,16 +136,4 @@ public class SearchService extends IntentService {
         return search;
     }
 
-    private static String getFieldData(String result, String field) {
-        try {
-            JSONObject json= (JSONObject) new JSONTokener(result).nextValue();
-            JSONObject json2 = json.getJSONObject("results");
-            String test = (String) json2.get(field);
-            Log.d("test", test);
-            return test;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 }

@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import services.SearchService;
 
@@ -17,6 +19,19 @@ public class SearchActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.query_view);
+
+        Button button = (Button) findViewById(R.id.button_search);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView textView = (TextView) findViewById(R.id.search_query);
+                if(textView.getText().toString().equals("")){
+                    textView.setError("Please enter a valid query");
+                }else{
+                    search();
+                }
+            }
+        });
     }
 
     @Override
@@ -41,7 +56,12 @@ public class SearchActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void search(View view) {
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+    }
+
+    public void search() {
         EditText editText = (EditText) findViewById(R.id.search_query);
         String query = editText.getText().toString();
 
