@@ -10,10 +10,10 @@ import android.util.Log;
 public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScrollListener {
     public static String TAG = EndlessRecyclerOnScrollListener.class.getSimpleName();
 
-    private int previousTotal = 0; // The total number of items in the dataset after the last load
+    private int previousTotalItemCount = 0; // The total number of items in the dataset after the last load
     private boolean loading = true; // True if we are still waiting for the last set of data to load.
     private int visibleThreshold = 5; // The minimum amount of items to have below your current scroll position before loading more.
-    int firstVisibleItem, visibleItemCount, totalItemCount;
+    private int firstVisibleItem, visibleItemCount, totalItemCount;
 
     private int current_page = 1;
 
@@ -31,41 +31,19 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
         totalItemCount = mLinearLayoutManager.getItemCount();
         firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
 
-        Log.d("loading", "loading");
-
         if (loading) {
-            if (totalItemCount > previousTotal) {
+            if (totalItemCount > previousTotalItemCount) {
                 Log.d("totalItemCount", String.valueOf(totalItemCount));
-                Log.d("previousTotal", String.valueOf(previousTotal));
+                Log.d("previousTotal", String.valueOf(previousTotalItemCount));
 
                 loading = false;
-                previousTotal = totalItemCount;
+                previousTotalItemCount = totalItemCount;
             }
         }
 
-        int a = totalItemCount - visibleItemCount;
-        int b = firstVisibleItem + visibleThreshold;
-        boolean dif = a <= b;
-
-        Log.d("dif", String.valueOf(dif));
-
-        Log.d("totalItemCount", String.valueOf(totalItemCount));
-        Log.d("visibleItemCount", String.valueOf(visibleItemCount));
-        Log.d("firstVisibleItem", String.valueOf(firstVisibleItem));
-        Log.d("visibleThreshold", String.valueOf(visibleThreshold));
-
-        Log.d("loading", String.valueOf(loading));
-
         if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-            // End has been reached
-
-            // Do something
-            current_page++;
-
             Log.d("onScrolled", "onLoadMore(current_page)");
-
             onLoadMore(current_page);
-
             loading = true;
         }
     }
@@ -73,7 +51,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
     public abstract void onLoadMore(int current_page);
 
     public void reset(int previousTotal, boolean loading) {
-        this.previousTotal = previousTotal;
+        this.previousTotalItemCount = previousTotal;
         this.loading = loading;
     }
 }

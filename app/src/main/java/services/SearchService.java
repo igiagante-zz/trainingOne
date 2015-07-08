@@ -39,15 +39,14 @@ public class SearchService extends IntentService {
 
     // TODO: Rename parameters
     public static final String SEARCH_PARAM = "services.extra.SEARCH_PARAM";
+    public static final String OFFSET_PARAM = "services.extra.OFFSET_PARAM";
+    public static final String LIMIT_PARAM = "services.extra.LIMIT_PARAM";
 
     public static final String RESULT = "result";
     public static final String NOTIFICATION = "training.service.receiver";
 
     boolean success;
     boolean stopped;
-
-    private int offset = 0;
-    private int limit = 10;
 
     public SearchService() {
         super("SearchService");
@@ -67,7 +66,9 @@ public class SearchService extends IntentService {
             final String action = intent.getAction();
             if (ACTION_SEARCH.equals(action)) {
                 final String query = intent.getStringExtra(SEARCH_PARAM);
-                handleActionSearch(query);
+                final String offset = intent.getStringExtra(OFFSET_PARAM);
+                final String limit = intent.getStringExtra(LIMIT_PARAM);
+                handleActionSearch(query, offset, limit);
             }
         }
     }
@@ -85,8 +86,8 @@ public class SearchService extends IntentService {
      * Handle action Search in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionSearch(String query) {
-        Search result = get(query);
+    private void handleActionSearch(String query, String offset, String limit) {
+        Search result = get(query, offset, limit);
         publishResults(result);
     }
 
@@ -95,11 +96,9 @@ public class SearchService extends IntentService {
         intent.putExtra(RESULT, result);
         sendBroadcast(intent);
         success = true;
-        offset += 10;
-        limit += 10;
     }
 
-    private Search get(String query){
+    private Search get(String query, String offset, String limit){
 
         Search search = null;
 

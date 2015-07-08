@@ -30,6 +30,10 @@ public class ListItemsActivity extends Activity {
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
+    private EndlessRecyclerOnScrollListener endlessRecyclerOnScrollListener;
+
+    private Integer offset = 0;
+    private Integer limit = 10;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
 
@@ -40,7 +44,7 @@ public class ListItemsActivity extends Activity {
                 if(intent.getAction().equals(SearchService.NOTIFICATION)){
                     Search search = (Search) bundle.getParcelable(SearchService.RESULT);
                     if (search != null) {
-                        items = search.getItems();
+                        addMoreItems(search.getItems());
                         mAdapter.setItems(items);
                         mAdapter.notifyDataSetChanged();
 
@@ -72,21 +76,29 @@ public class ListItemsActivity extends Activity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(mLayoutManager) {
-            @Override
-            public void onLoadMore(int current_page) {
-                Log.d("onLoadMore", "loading more data");
-                getData();
-            }
-        });
-
         mAdapter = new MyAdapter(items, this);
         mRecyclerView.setAdapter(mAdapter);
 
+        endlessRecyclerOnScrollListener = new EndlessRecyclerOnScrollListener(mLayoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                offset += 10 * current_page;
+                getData(String.valueOf(offset), String.valueOf(limit));
+            }
+        };
+
+        mRecyclerView.addOnScrollListener(endlessRecyclerOnScrollListener);
+
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        // Get param from search activity
-        getData();
+        getData(String.valueOf(offset), String.valueOf(limit));
+    }
+
+    private void addMoreItems(ArrayList<Item> items){
+        if(this.items == null){
+            this.items = new ArrayList<>();
+        }
+        this.items.addAll(items);
     }
 
     @Override
@@ -115,6 +127,7 @@ public class ListItemsActivity extends Activity {
     protected void onResume() {
         super.onResume();
         registerReceiver(receiver, new IntentFilter(SearchService.NOTIFICATION));
+        endlessRecyclerOnScrollListener.reset(0, true);
     }
 
     @Override
@@ -123,13 +136,15 @@ public class ListItemsActivity extends Activity {
         unregisterReceiver(receiver);
     }
 
-    private void getData(){
+    private void getData(String offset, String limit){
         Intent intent = getIntent();
         String query = intent.getStringExtra(SearchService.SEARCH_PARAM);
 
         Intent intentService = new Intent(this, SearchService.class);
         intentService.setAction(SearchService.ACTION_SEARCH);
         intentService.putExtra(SearchService.SEARCH_PARAM, query);
+        intentService.putExtra(SearchService.OFFSET_PARAM, offset);
+        intentService.putExtra(SearchService.LIMIT_PARAM, limit);
         startService(intentService);
     }
 }
