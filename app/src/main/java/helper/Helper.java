@@ -1,15 +1,23 @@
 package helper;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
+
+import util.Utils;
+
 /**
  * Created by igiagante on 2/7/15.
  */
@@ -47,6 +55,7 @@ public class Helper {
         }
         return "";
     }
+
 
     private static String convertInputStreamToString(InputStream inputStream) throws IOException {
 

@@ -1,9 +1,8 @@
 package imageloader;
 
 /**
- * Created by igiagante on 8/7/15.
+ * Used to display bitmap in the UI thread
  */
-
 public class BitmapDisplayer implements Runnable {
 
     @Override

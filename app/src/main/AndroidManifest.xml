@@ -23,8 +23,18 @@
             android:label="@string/title_activity_list_items" >
         </activity>
 
+        <activity
+            android:name=".ItemActivity"
+            android:label="@string/title_activity_list_items" >
+        </activity>
+
         <service
             android:name="services.SearchService"
+            android:exported="false" >
+        </service>
+
+        <service
+            android:name="services.ItemService"
             android:exported="false" >
         </service>
 

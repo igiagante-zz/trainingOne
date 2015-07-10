@@ -22,10 +22,11 @@ public class ItemTest {
     public void test(){
 
         Parcel parcel = Parcel.obtain();
-        Item item = new Item("title", "price", "thumbnail", false);
+        Item item = new Item("MLA563855752", "title", "price", "thumbnail", false);
         item.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Item parceledItem = Item.CREATOR.createFromParcel(parcel);
+        assertEquals(item.getItemId(), parceledItem.getItemId());
         assertEquals(item.getTitle(), parceledItem.getTitle());
         assertEquals(item.getPrice(), parceledItem.getPrice());
         assertEquals(item.getThumbnail(), parceledItem.getThumbnail());

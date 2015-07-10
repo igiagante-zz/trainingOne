@@ -58,7 +58,6 @@ public class SearchService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         if(stopped){
-            Log.d("Destroy", "destroy success");
             return;
         }
 
@@ -77,9 +76,6 @@ public class SearchService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
         stopped = true;
-        if(success){
-            Log.d("Destroy", "destroy success");
-        }
     }
 
     /**
@@ -143,13 +139,14 @@ public class SearchService extends IntentService {
             for (int i = 0; i < jsonArray.length(); i++) {
 
                 JSONObject itemJson = jsonArray.getJSONObject(i);
+                String itemId = itemJson.getString("id");
                 String title = itemJson.getString("title");
                 String price = itemJson.getString("price");
                 String thumbnail = itemJson.getString("thumbnail");
                 JSONObject shippingJson = itemJson.getJSONObject("shipping");
                 Boolean shipping = shippingJson.getBoolean("free_shipping");
 
-                items.add(new Item(title, price, thumbnail, shipping));
+                items.add(new Item(itemId, title, price, thumbnail, shipping));
             }
 
             search.setItems(items);

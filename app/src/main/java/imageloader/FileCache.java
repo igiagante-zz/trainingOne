@@ -23,7 +23,7 @@ public class FileCache {
 
     public File getFile(String url){
         //Identify images by hashcode or encode by URLEncoder.encode.
-        String filename=String.valueOf(url.hashCode());
+        String filename = String.valueOf(url.hashCode());
 
         File file = new File(cacheDir, filename);
         return file;
@@ -36,7 +36,7 @@ public class FileCache {
         if(files == null)
             return;
         //delete all cache directory files
-        for(File f:files)
+        for(File f : files)
             f.delete();
     }
 }

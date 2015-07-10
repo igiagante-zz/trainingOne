@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 
 import model.Item;
 import model.Search;
+import services.ItemService;
 import services.SearchService;
 import views.EndlessRecyclerOnScrollListener;
 
@@ -92,7 +94,9 @@ public class ListItemsActivity extends Activity {
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         getData(String.valueOf(offset), String.valueOf(limit));
+
     }
+
 
     private void addMoreItems(ArrayList<Item> items){
         if(this.items == null){

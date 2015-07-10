@@ -3,7 +3,7 @@ package imageloader;
 import android.widget.ImageView;
 
 /**
- * Created by igiagante on 8/7/15.
+ * Used to request an image and save in memory cache
  */
 public class PhotosLoader implements Runnable {
 
