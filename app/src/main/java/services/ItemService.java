@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,10 +22,9 @@ public class ItemService extends IntentService {
 
     // TODO: Rename parameters
     public static final String ITEM = "ITEM";
-    public static final String ITEM_DESCRIPTION = "ITEM_DESCRIPTION";
 
     // TODO: Rename actions, choose action names that describe tasks that this
-    public static final String ACTION_GET_ITEM_DESCRIPTION = "ACTION_GET_ITEM_DESCRIPTION";
+    public static final String ACTION_GET_ITEM = "ACTION_GET_ITEM";
 
     //Notificacions
     public static final String NOTIFICATION_ITEM_READY = "ITEM_READY";
@@ -38,24 +38,48 @@ public class ItemService extends IntentService {
 
         if (intent != null) {
             final String action = intent.getAction();
-            if (ACTION_GET_ITEM_DESCRIPTION.equals(action)) {
+            if (ACTION_GET_ITEM.equals(action)) {
                 final Item item = intent.getParcelableExtra(ITEM);
-                String result = get(item.getItemId());
-                publishResults(result);
+                setImageUrl(item);
+                setDescription(item);
+                publishResults(item);
             }
         }
     }
 
-    private void publishResults(String result) {
+    private void publishResults(Item result) {
         Intent intent = new Intent(NOTIFICATION_ITEM_READY);
-        intent.putExtra(ITEM_DESCRIPTION, result);
+        intent.putExtra(ITEM, result);
         sendBroadcast(intent);
     }
 
-    private String get(String itemId){
+    private void setImageUrl(Item item){
 
         try{
-            String queryEncoded = URLEncoder.encode(itemId, "UTF-8");
+            String queryEncoded = URLEncoder.encode(item.getItemId(), "UTF-8");
+            String dir = "https://api.mercadolibre.com/items/"+ queryEncoded;
+            URL url = new URL(dir);
+
+            String response = Helper.get(url);
+            Log.d("response", response);
+
+            JSONObject resultObject = new JSONObject(response);
+            JSONArray pictures = resultObject.getJSONArray("pictures");
+            JSONObject first = pictures.getJSONObject(0);
+            String urlJSON = first.getString("url");
+            item.setImageUrl(urlJSON);
+
+        }catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException ioe){
+            System.out.println("Error: " + ioe.getMessage());
+        }
+    }
+
+    private void setDescription(Item item){
+
+        try{
+            String queryEncoded = URLEncoder.encode(item.getItemId(), "UTF-8");
             String dir = "https://api.mercadolibre.com/items/"+ queryEncoded + "/description";
             URL url = new URL(dir);
 
@@ -63,14 +87,12 @@ public class ItemService extends IntentService {
             Log.d("response", response);
 
             JSONObject resultObject = new JSONObject(response);
-            return resultObject.get("text").toString();
+            item.setDescription(resultObject.get("text").toString());
 
         }catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException ioe){
             System.out.println("Error: " + ioe.getMessage());
         }
-
-        return "";
     }
 }

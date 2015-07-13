@@ -2,42 +2,68 @@ package com.example.igiagante.trainingone;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import services.SearchService;
 
 
 public class SearchActivity extends Activity {
 
+    public static final String PREFS_NAME = "MyPrefsFile";
+    private StringBuilder queryList; //String list with comma
+    private String [] queries; //list
+    private ArrayAdapter<String> adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.query_view);
+        setContentView(R.layout.search_view);
 
         if( savedInstanceState != null ) {
             TextView textView = (TextView) findViewById(R.id.search_query);
             textView.setText(savedInstanceState.getString("search_query"));
         }
 
+        initSearchQueryList();
+
         Button button = (Button) findViewById(R.id.button_search);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TextView textView = (TextView) findViewById(R.id.search_query);
-                if(textView.getText().toString().equals("")){
+                String text = textView.getText().toString();
+                if (text.equals("")) {
                     textView.setError("Please enter a valid query");
-                }else{
+                } else {
+                    if (!existQuery(text)) {
+                        queryList.append(text);
+                        queryList.append(",");
+                        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("list", queryList.toString());
+                        editor.apply();
+                    }
                     search();
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initSearchQueryList();
     }
 
     @Override
@@ -76,5 +102,34 @@ public class SearchActivity extends Activity {
         Intent intent = new Intent(this, ListItemsActivity.class);
         intent.putExtra(SearchService.SEARCH_PARAM, query);
         startActivity(intent);
+    }
+
+    private void initSearchQueryList(){
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        String list = settings.getString("list", "");
+
+        queryList = new StringBuilder(list);
+
+        if(list != null && !list.isEmpty()){
+            queries = list.split(",");
+        }
+
+        // Get a reference to the AutoCompleteTextView in the layout
+        AutoCompleteTextView textView = (AutoCompleteTextView) findViewById(R.id.search_query);
+
+        // Create the adapter and set it to the AutoCompleteTextView
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, queries);
+        textView.setAdapter(adapter);
+        textView.setThreshold(1);
+
+    }
+
+    private boolean existQuery(String query){
+        for(int i = 0; i < queries.length; i++){
+            if(queries[i].equals(query))
+                return true;
+        }
+        return false;
     }
 }

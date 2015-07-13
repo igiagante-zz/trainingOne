@@ -25,7 +25,12 @@
 
         <activity
             android:name=".ItemActivity"
-            android:label="@string/title_activity_list_items" >
+            android:label="@string/title_item" >
+        </activity>
+
+        <activity
+            android:name=".DescriptionActivity"
+            android:label="@string/title_description" >
         </activity>
 
         <service

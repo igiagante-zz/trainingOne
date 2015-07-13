@@ -13,6 +13,7 @@ public class Item implements Parcelable {
     private String title;
     private String price;
     private String thumbnail;
+    private String imageUrl;
     private Boolean shipping;
     private String description;
 
@@ -22,7 +23,6 @@ public class Item implements Parcelable {
         this.price = price;
         this.thumbnail = thumbnail;
         this.shipping = shipping;
-        this.description = description;
     }
 
     public void setTitle(String title) {
@@ -45,12 +45,24 @@ public class Item implements Parcelable {
         return thumbnail;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     public Boolean getShipping() {
         return shipping;
     }
 
     public String getDescription() {
         return description;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
@@ -64,6 +76,7 @@ public class Item implements Parcelable {
         dest.writeString(title);
         dest.writeString(price);
         dest.writeString(thumbnail);
+        dest.writeString(imageUrl);
         dest.writeInt(shipping ? 1 : 0);
         dest.writeString(description);
     }
@@ -83,6 +96,7 @@ public class Item implements Parcelable {
         title = in.readString();
         price = in.readString();
         thumbnail = in.readString();
+        imageUrl = in.readString();
         shipping = in.readInt() == 1;
         description = in.readString();
     }

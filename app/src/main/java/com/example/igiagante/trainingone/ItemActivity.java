@@ -8,7 +8,11 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import imageloader.ImageLoader;
@@ -21,18 +25,33 @@ import services.ItemService;
 public class ItemActivity extends Activity{
 
     private ImageLoader imageLoader;
-    private Context context;
+
     static final String ITEM_PARAM = "ITEM_PARAM";
 
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, Intent intent) {
             if(intent.getAction().equals(ItemService.NOTIFICATION_ITEM_READY)){
-                String description = intent.getStringExtra(ItemService.ITEM_DESCRIPTION);
-                TextView textView = (TextView)findViewById(R.id.item_description);
-                textView.setText(description);
+
+                final Item item = intent.getParcelableExtra(ItemService.ITEM);
+
+                ImageView imageView = (ImageView) findViewById(R.id.item_image);
+                imageLoader.displayImage(item.getImageUrl(), imageView, true);
+
+                ProgressBar pb = (ProgressBar) findViewById(R.id.item_progress_bar);
+                pb.setVisibility(View.INVISIBLE);
+
+                Button button = (Button) findViewById(R.id.item_button);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(v.getContext(), DescriptionActivity.class);
+                        intent.putExtra(ITEM_PARAM, item);
+                        startActivity(intent);
+                    }
+                });
             }
         }
     };
@@ -42,6 +61,9 @@ public class ItemActivity extends Activity{
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_item);
+
+        ProgressBar pb = (ProgressBar) findViewById(R.id.item_progress_bar);
+        pb.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
 
@@ -56,16 +78,13 @@ public class ItemActivity extends Activity{
             Bitmap placeholderBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.placeholder);
             imageLoader = new ImageLoader(placeholderBitmap);
 
-            ImageView imageView = (ImageView) findViewById(R.id.item_image);
-            imageLoader.displayImage(item.getThumbnail(), imageView);
-
             getItemDescription(item);
         }
     }
 
     public void getItemDescription(Item item){
         Intent intentService = new Intent(this, ItemService.class);
-        intentService.setAction(ItemService.ACTION_GET_ITEM_DESCRIPTION);
+        intentService.setAction(ItemService.ACTION_GET_ITEM);
         intentService.putExtra(ItemService.ITEM, item);
         startService(intentService);
     }

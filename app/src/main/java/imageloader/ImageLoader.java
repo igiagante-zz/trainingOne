@@ -45,7 +45,7 @@ public class ImageLoader {
      * @param url
      * @param imageView
      */
-    public void displayImage(String url, ImageView imageView){
+    public void displayImage(String url, ImageView imageView, Boolean fullsize){
 
         imageViews.put(imageView, url);
         Bitmap bitmap = getBitmapFromCache(url);
@@ -54,7 +54,11 @@ public class ImageLoader {
             imageView.setImageBitmap(bitmap);
         }else{
             imageView.setImageBitmap(placeholder);
-            getBitmap(imageView, url, width, height);
+            if(fullsize){
+                getBitmap(imageView, url, 350, 290);
+            }else{
+                getBitmap(imageView, url, width, height);
+            }
         }
     }
 

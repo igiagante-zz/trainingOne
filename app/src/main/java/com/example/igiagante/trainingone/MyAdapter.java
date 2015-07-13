@@ -80,7 +80,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
         });
 
         itemViewHolder.itemId = items.get(position).getItemId();
-        imageLoader.displayImage(items.get(position).getThumbnail(), itemViewHolder.imageItem);
+        imageLoader.displayImage(items.get(position).getThumbnail(), itemViewHolder.imageItem, false);
 
         //itemViewHolder.imageItem.setImageBitmap(bitmap);
         itemViewHolder.txtTittle.setText(items.get(position).getTitle());
