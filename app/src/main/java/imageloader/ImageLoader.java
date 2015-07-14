@@ -123,8 +123,4 @@ public class ImageLoader {
         }
         return null;
     }
-
-    public void setPlaceholder(Bitmap bitmap) {
-        placeholder = bitmap;
-    }
 }

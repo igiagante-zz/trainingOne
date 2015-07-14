@@ -90,11 +90,9 @@ public class ListItemsActivity extends Activity {
         };
 
         mRecyclerView.addOnScrollListener(endlessRecyclerOnScrollListener);
-
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         getData(String.valueOf(offset), String.valueOf(limit));
-
     }
 
 
