@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import helper.Helper;
+import utils.HttpClient;
 import model.Item;
 
 /**
@@ -60,7 +60,7 @@ public class ItemService extends IntentService {
             String dir = "https://api.mercadolibre.com/items/"+ queryEncoded;
             URL url = new URL(dir);
 
-            String response = Helper.get(url);
+            String response = HttpClient.get(url);
             Log.d("response", response);
 
             JSONObject resultObject = new JSONObject(response);
@@ -83,7 +83,7 @@ public class ItemService extends IntentService {
             String dir = "https://api.mercadolibre.com/items/"+ queryEncoded + "/description";
             URL url = new URL(dir);
 
-            String response = Helper.get(url);
+            String response = HttpClient.get(url);
             Log.d("response", response);
 
             JSONObject resultObject = new JSONObject(response);

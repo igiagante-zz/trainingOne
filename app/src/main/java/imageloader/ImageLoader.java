@@ -91,7 +91,7 @@ public class ImageLoader {
                 final Bitmap bitmap = downloadBitmap(url, width, height);
                 Message message = Message.obtain();
                 message.obj = bitmap;
-                Log.d(null, "Item downloaded: " + url);
+                //Log.d(null, "Item downloaded: " + url);
                 handler.sendMessage(message);
             }
         });
