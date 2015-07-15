@@ -25,6 +25,7 @@ import services.ItemService;
 public class ItemActivity extends Activity{
 
     private ImageLoader imageLoader;
+    private Item item;
 
     static final String ITEM_PARAM = "ITEM_PARAM";
 
@@ -35,7 +36,7 @@ public class ItemActivity extends Activity{
         public void onReceive(final Context context, Intent intent) {
             if(intent.getAction().equals(ItemService.NOTIFICATION_ITEM_READY)){
 
-                final Item item = intent.getParcelableExtra(ItemService.ITEM);
+                item = intent.getParcelableExtra(ItemService.ITEM);
 
                 ImageView imageView = (ImageView) findViewById(R.id.item_image);
                 imageLoader.displayImage(item.getImageUrl(), imageView, true);
@@ -65,21 +66,24 @@ public class ItemActivity extends Activity{
         ProgressBar pb = (ProgressBar) findViewById(R.id.item_progress_bar);
         pb.setVisibility(View.VISIBLE);
 
-        Intent intent = getIntent();
+        if(savedInstanceState != null){
+            item = savedInstanceState.getParcelable("item");
+        }else{
+            Intent intent = getIntent();
+            Bundle bundle = intent.getExtras();
 
-        Bundle bundle = intent.getExtras();
-        if (bundle != null) {
-
-            Item item = (Item) bundle.getParcelable(ITEM_PARAM);
-
-            TextView textView = (TextView)findViewById(R.id.item_title);
-            textView.setText(item.getTitle());
-
-            Bitmap placeholderBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.placeholder);
-            imageLoader = new ImageLoader(placeholderBitmap);
-
-            getItemDescription(item);
+            if (bundle != null) {
+                item = (Item) bundle.getParcelable(ITEM_PARAM);
+            }
         }
+
+        TextView textView = (TextView)findViewById(R.id.item_title);
+        textView.setText(item.getTitle());
+
+        Bitmap placeholderBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.placeholder);
+        imageLoader = new ImageLoader(placeholderBitmap);
+
+        getItemDescription(item);
     }
 
     public void getItemDescription(Item item){
@@ -99,5 +103,11 @@ public class ItemActivity extends Activity{
     protected void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("item", item);
     }
 }

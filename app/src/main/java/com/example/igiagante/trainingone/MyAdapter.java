@@ -63,8 +63,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
         // create a new view
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view, parent, false);
         // set the view's size, margins, paddings and layout parameters
-        ItemViewHolder vh = new ItemViewHolder(v);
-        return vh;
+        return new ItemViewHolder(v);
     }
 
     @Override

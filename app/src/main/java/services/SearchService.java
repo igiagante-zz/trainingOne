@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import utils.HttpClient;
@@ -134,7 +135,8 @@ public class SearchService extends IntentService {
                 JSONObject itemJson = jsonArray.getJSONObject(i);
                 String itemId = itemJson.getString("id");
                 String title = itemJson.getString("title");
-                String price = itemJson.getString("price");
+                NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
+                String price = currencyInstance.getCurrency() + itemJson.getString("price");
                 String thumbnail = itemJson.getString("thumbnail");
                 JSONObject shippingJson = itemJson.getJSONObject("shipping");
                 Boolean shipping = shippingJson.getBoolean("free_shipping");

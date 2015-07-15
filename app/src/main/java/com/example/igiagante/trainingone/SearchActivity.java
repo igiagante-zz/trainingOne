@@ -1,8 +1,11 @@
 package com.example.igiagante.trainingone;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,8 +15,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.util.ArrayList;
+import android.widget.Toast;
 
 import services.SearchService;
 
@@ -54,7 +56,12 @@ public class SearchActivity extends Activity {
                         editor.putString("list", queryList.toString());
                         editor.apply();
                     }
-                    search();
+                    if(isNetworkStatusAvialable(getApplicationContext())) {
+                        search();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Internet is not avialable", Toast.LENGTH_LONG).show();
+                    }
+
                 }
             }
         });
@@ -104,6 +111,18 @@ public class SearchActivity extends Activity {
         startActivity(intent);
     }
 
+    public static boolean isNetworkStatusAvialable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null)
+        {
+            NetworkInfo netInfos = connectivityManager.getActiveNetworkInfo();
+            if(netInfos != null)
+                if(netInfos.isConnected())
+                    return true;
+        }
+        return false;
+    }
+
     private void initSearchQueryList(){
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -113,6 +132,9 @@ public class SearchActivity extends Activity {
 
         if(list != null && !list.isEmpty()){
             queries = list.split(",");
+        }else{
+            queries = new String[1];
+            queries[0] = "";
         }
 
         // Get a reference to the AutoCompleteTextView in the layout
@@ -126,9 +148,11 @@ public class SearchActivity extends Activity {
     }
 
     private boolean existQuery(String query){
-        for(int i = 0; i < queries.length; i++){
-            if(queries[i].equals(query))
-                return true;
+        if(queries != null && queries.length > 0 ){
+            for(int i = 0; i < queries.length; i++){
+                if(queries[i].equals(query))
+                    return true;
+            }
         }
         return false;
     }

@@ -5,15 +5,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
@@ -36,6 +41,8 @@ public class ListItemsActivity extends Activity {
 
     private Integer offset = 0;
     private Integer limit = 10;
+
+    private ProgressBar pb;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
 
@@ -66,17 +73,20 @@ public class ListItemsActivity extends Activity {
 
         setContentView(R.layout.activity_main);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
-        ProgressBar pb = (ProgressBar) findViewById(R.id.progress_bar);
-        pb.setVisibility(View.VISIBLE);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        pb = (ProgressBar) findViewById(R.id.progress_bar);
+
+        if( savedInstanceState != null ) {
+            items = savedInstanceState.getParcelableArrayList("items");
+            pb.setVisibility(View.INVISIBLE);
+        }else{
+            pb.setVisibility(View.VISIBLE);
+            getData(String.valueOf(offset), String.valueOf(limit));
+        }
 
         mAdapter = new MyAdapter(items, this);
         mRecyclerView.setAdapter(mAdapter);
@@ -92,7 +102,6 @@ public class ListItemsActivity extends Activity {
         mRecyclerView.addOnScrollListener(endlessRecyclerOnScrollListener);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        getData(String.valueOf(offset), String.valueOf(limit));
     }
 
 
@@ -136,6 +145,12 @@ public class ListItemsActivity extends Activity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("items", items);
     }
 
     private void getData(String offset, String limit){

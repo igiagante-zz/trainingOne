@@ -65,8 +65,8 @@ public class ImageLoader {
     /**
      * If image isn't in cache, lets ask the new image
      * @param imageView
-     * @param url
-     */
+//     * @param url
+//     */
     private void getBitmap(final ImageView imageView, final String url,
                            final int width, final int height){
 
