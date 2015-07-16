@@ -11,11 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import connections.Connection;
 import imageloader.ImageLoader;
 import model.Item;
 import services.ItemService;
@@ -27,14 +29,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
 
     private ArrayList<Item> items;
     private Context context;
-    private ImageLoader imageLoader;
 
     // inner class to hold a reference to each card_view of RecyclerView
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         // each data card_view is just a string in this case
         public String itemId;
         public CardView cardView;
-        public ImageView imageItem;
+        public ImageView imageView;
         public TextView txtTittle;
         public TextView txtPrice;
         public ImageView shippingIcon;
@@ -42,7 +43,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
         public ItemViewHolder(View v) {
             super(v);
             cardView = (CardView) v.findViewById(R.id.card_view);
-            imageItem = (ImageView) v.findViewById(R.id.thumbnail);
+            imageView = (ImageView) v.findViewById(R.id.thumbnail);
             txtTittle = (TextView) v.findViewById(R.id.title);
             txtPrice = (TextView) v.findViewById(R.id.price);
             shippingIcon = (ImageView) v.findViewById(R.id.shippingYes);
@@ -53,8 +54,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
     public MyAdapter(ArrayList<Item> items, Context context) {
         this.context = context;
         this.items = items;
-        Bitmap placeholderBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.placeholder);
-        imageLoader = new ImageLoader(placeholderBitmap);
+        ImageLoader.INSTANCE.setPlaceholder(BitmapFactory.decodeResource(
+                context.getResources(), R.drawable.placeholder));
     }
 
     // Create new views (invoked by the layout manager)
@@ -72,14 +73,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
         itemViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), ItemActivity.class);
-                intent.putExtra(ItemActivity.ITEM_PARAM, items.get(position));
-                v.getContext().startActivity(intent);
+                if(Connection.checkInternet(v.getContext())){
+                    Intent intent = new Intent(v.getContext(), ItemActivity.class);
+                    intent.putExtra(ItemActivity.ITEM_PARAM, items.get(position));
+                    v.getContext().startActivity(intent);
+                }else{
+                    Toast.makeText(context, "Internet is not avialable", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         itemViewHolder.itemId = items.get(position).getItemId();
-        imageLoader.displayImage(items.get(position).getThumbnail(), itemViewHolder.imageItem, false);
+        itemViewHolder.imageView.setTag(items.get(position).getThumbnail());
+        ImageLoader.INSTANCE.displayImage(items.get(position).getThumbnail(), itemViewHolder.imageView, false);
 
         //itemViewHolder.imageItem.setImageBitmap(bitmap);
         itemViewHolder.txtTittle.setText(items.get(position).getTitle());

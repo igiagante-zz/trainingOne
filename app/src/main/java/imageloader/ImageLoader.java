@@ -1,11 +1,15 @@
 package imageloader;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.ImageView;
+
+import com.example.igiagante.trainingone.R;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
@@ -13,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
@@ -21,22 +26,27 @@ import java.util.concurrent.Executors;
 /**
  * Created by igiagante on 8/7/15.
  */
-public class ImageLoader {
+public enum ImageLoader {
+    INSTANCE;
 
-    ExecutorService executorService;
-    private Bitmap placeholder;
-    private static final int height = 80;
-    private static final int width = 80;
+    private final ExecutorService executorService;
+    private static Bitmap placeholder;
+    static final int height = 80;
+    static final int width = 80;
 
     //Map to tags each ImageView and so it can see if the ImageView already exits
     private Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 
     //Map to keep bitmaps in memory
-    private final Map<String, SoftReference<Bitmap>> cache = new HashMap<String, SoftReference<Bitmap>>();
+    private final Map<String, Bitmap> cache;
 
-    public ImageLoader(Bitmap placeholder){
-        this.placeholder = placeholder;
+    ImageLoader(){
+        cache = Collections.synchronizedMap(new LinkedHashMap<String, Bitmap>(10,1.5f,true));
         executorService = Executors.newFixedThreadPool(5);
+    }
+
+    public void setPlaceholder(Bitmap bmp) {
+        placeholder = bmp;
     }
 
     /**
@@ -49,8 +59,10 @@ public class ImageLoader {
 
         imageViews.put(imageView, url);
         Bitmap bitmap = getBitmapFromCache(url);
+        Log.d("bitmap get", url);
 
         if(bitmap != null){
+            Log.d("bitmap height", String.valueOf(bitmap.getHeight()));
             imageView.setImageBitmap(bitmap);
         }else{
             imageView.setImageBitmap(placeholder);
@@ -106,7 +118,8 @@ public class ImageLoader {
         try {
             Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
             bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
-            cache.put(url, new SoftReference<>(bitmap));
+            cache.put(url, bitmap);
+            Log.d("bitmap added:", url);
             return bitmap;
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -116,10 +129,9 @@ public class ImageLoader {
         return null;
     }
 
-
     public Bitmap getBitmapFromCache(String url) {
         if (cache.containsKey(url)) {
-            return cache.get(url).get();
+            return cache.get(url);
         }
         return null;
     }

@@ -9,12 +9,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import connections.Connection;
 import imageloader.ImageLoader;
 import model.Item;
 import services.ItemService;
@@ -24,11 +25,9 @@ import services.ItemService;
  */
 public class ItemActivity extends Activity{
 
-    private ImageLoader imageLoader;
     private Item item;
 
     static final String ITEM_PARAM = "ITEM_PARAM";
-
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
 
@@ -39,20 +38,10 @@ public class ItemActivity extends Activity{
                 item = intent.getParcelableExtra(ItemService.ITEM);
 
                 ImageView imageView = (ImageView) findViewById(R.id.item_image);
-                imageLoader.displayImage(item.getImageUrl(), imageView, true);
+                ImageLoader.INSTANCE.displayImage(item.getImageUrl(), imageView, true);
 
                 ProgressBar pb = (ProgressBar) findViewById(R.id.item_progress_bar);
                 pb.setVisibility(View.INVISIBLE);
-
-                Button button = (Button) findViewById(R.id.item_button);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(v.getContext(), DescriptionActivity.class);
-                        intent.putExtra(ITEM_PARAM, item);
-                        startActivity(intent);
-                    }
-                });
             }
         }
     };
@@ -63,27 +52,43 @@ public class ItemActivity extends Activity{
 
         setContentView(R.layout.activity_item);
 
-        ProgressBar pb = (ProgressBar) findViewById(R.id.item_progress_bar);
-        pb.setVisibility(View.VISIBLE);
+        Button button = (Button) findViewById(R.id.item_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), DescriptionActivity.class);
+                intent.putExtra(ITEM_PARAM, item);
+                startActivity(intent);
+            }
+        });
 
         if(savedInstanceState != null){
+
             item = savedInstanceState.getParcelable("item");
+
+            ImageView imageView = (ImageView) findViewById(R.id.item_image);
+            ImageLoader.INSTANCE.displayImage(item.getImageUrl(), imageView, true);
+
+            ProgressBar pb = (ProgressBar) findViewById(R.id.item_progress_bar);
+            pb.setVisibility(View.INVISIBLE);
+
         }else{
+
+            ProgressBar pb = (ProgressBar) findViewById(R.id.item_progress_bar);
+            pb.setVisibility(View.VISIBLE);
+
             Intent intent = getIntent();
             Bundle bundle = intent.getExtras();
 
             if (bundle != null) {
                 item = (Item) bundle.getParcelable(ITEM_PARAM);
             }
+
+            getItemDescription(item);
         }
 
         TextView textView = (TextView)findViewById(R.id.item_title);
         textView.setText(item.getTitle());
-
-        Bitmap placeholderBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.placeholder);
-        imageLoader = new ImageLoader(placeholderBitmap);
-
-        getItemDescription(item);
     }
 
     public void getItemDescription(Item item){

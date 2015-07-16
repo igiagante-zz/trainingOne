@@ -14,6 +14,7 @@
         android:hint="@string/edit_message"
         android:inputType="textAutoComplete|textAutoCorrect"
         android:ems="10"
+        android:textColor="@color/text_shadow"
         style="@style/search_input"/>
 
     <Button

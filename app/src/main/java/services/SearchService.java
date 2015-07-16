@@ -14,6 +14,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Locale;
 
 import utils.HttpClient;
 import model.Item;
@@ -135,8 +137,9 @@ public class SearchService extends IntentService {
                 JSONObject itemJson = jsonArray.getJSONObject(i);
                 String itemId = itemJson.getString("id");
                 String title = itemJson.getString("title");
-                NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
-                String price = currencyInstance.getCurrency() + itemJson.getString("price");
+                Locale locale = new Locale("ar", "AR");
+                NumberFormat format = NumberFormat.getCurrencyInstance(locale);
+                String price = format.getCurrency() + " " + itemJson.getString("price");
                 String thumbnail = itemJson.getString("thumbnail");
                 JSONObject shippingJson = itemJson.getJSONObject("shipping");
                 Boolean shipping = shippingJson.getBoolean("free_shipping");

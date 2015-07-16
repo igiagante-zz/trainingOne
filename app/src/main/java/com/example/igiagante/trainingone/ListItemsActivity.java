@@ -20,9 +20,11 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import connections.Connection;
 import model.Item;
 import model.Search;
 import services.ItemService;
@@ -91,7 +93,8 @@ public class ListItemsActivity extends Activity {
         mAdapter = new MyAdapter(items, this);
         mRecyclerView.setAdapter(mAdapter);
 
-        endlessRecyclerOnScrollListener = new EndlessRecyclerOnScrollListener(mLayoutManager) {
+        endlessRecyclerOnScrollListener = new EndlessRecyclerOnScrollListener(mLayoutManager, this) {
+
             @Override
             public void onLoadMore(int current_page) {
                 offset += 10 * current_page;
@@ -101,7 +104,6 @@ public class ListItemsActivity extends Activity {
 
         mRecyclerView.addOnScrollListener(endlessRecyclerOnScrollListener);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
     }
 
 

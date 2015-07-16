@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import connections.Connection;
 import services.SearchService;
 
 
@@ -56,12 +57,11 @@ public class SearchActivity extends Activity {
                         editor.putString("list", queryList.toString());
                         editor.apply();
                     }
-                    if(isNetworkStatusAvialable(getApplicationContext())) {
+                    if (Connection.checkInternet(getApplicationContext())){
                         search();
-                    } else {
+                    }else{
                         Toast.makeText(getApplicationContext(), "Internet is not avialable", Toast.LENGTH_LONG).show();
                     }
-
                 }
             }
         });
@@ -109,18 +109,6 @@ public class SearchActivity extends Activity {
         Intent intent = new Intent(this, ListItemsActivity.class);
         intent.putExtra(SearchService.SEARCH_PARAM, query);
         startActivity(intent);
-    }
-
-    public static boolean isNetworkStatusAvialable(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null)
-        {
-            NetworkInfo netInfos = connectivityManager.getActiveNetworkInfo();
-            if(netInfos != null)
-                if(netInfos.isConnected())
-                    return true;
-        }
-        return false;
     }
 
     private void initSearchQueryList(){
