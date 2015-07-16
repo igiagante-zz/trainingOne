@@ -12,7 +12,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/edit_message"
-        android:backgroundTint="@color/text_shadow_white"
         android:inputType="textAutoComplete|textAutoCorrect"
         android:ems="10"
         style="@style/search_input"/>

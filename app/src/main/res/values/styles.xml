@@ -1,4 +1,7 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="AppTheme" android:theme="@style/Theme.AppCompat.Light">
+    </style>
 
     <style name="button" parent="@android:style/Widget.Button">
         <item name="android:gravity">center_vertical|center_horizontal</item>

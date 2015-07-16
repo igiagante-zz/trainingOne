@@ -2,4 +2,16 @@
 <resources>
     <style name="AppTheme" parent="android:Theme.Material.Light">
     </style>
+
+    <style name="search_input" parent="@android:style/Widget.TextView">
+        <item name="android:background">@drawable/search_text_view</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:width">100dp</item>
+        <item name="android:height">50dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:radius">10dp</item>
+        <item name="android:colorBackground">@color/text_shadow_white </item>
+    </style>
+
 </resources>
