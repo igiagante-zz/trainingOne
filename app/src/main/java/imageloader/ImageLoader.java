@@ -59,10 +59,8 @@ public enum ImageLoader {
 
         imageViews.put(imageView, url);
         Bitmap bitmap = getBitmapFromCache(url);
-        Log.d("bitmap get", url);
 
         if(bitmap != null){
-            Log.d("bitmap height", String.valueOf(bitmap.getHeight()));
             imageView.setImageBitmap(bitmap);
         }else{
             imageView.setImageBitmap(placeholder);
@@ -119,7 +117,6 @@ public enum ImageLoader {
             Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
             bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
             cache.put(url, bitmap);
-            Log.d("bitmap added:", url);
             return bitmap;
         } catch (MalformedURLException e) {
             e.printStackTrace();

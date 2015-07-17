@@ -93,12 +93,16 @@ public class ListItemsActivity extends Activity {
         mAdapter = new MyAdapter(items, this);
         mRecyclerView.setAdapter(mAdapter);
 
-        endlessRecyclerOnScrollListener = new EndlessRecyclerOnScrollListener(mLayoutManager, this) {
+        endlessRecyclerOnScrollListener = new EndlessRecyclerOnScrollListener(mLayoutManager) {
 
             @Override
             public void onLoadMore(int current_page) {
-                offset += 10 * current_page;
-                getData(String.valueOf(offset), String.valueOf(limit));
+                if(Connection.checkInternet(getApplicationContext())){
+                    offset += 10 * current_page;
+                    getData(String.valueOf(offset), String.valueOf(limit));
+                }else{
+                    Toast.makeText(getApplicationContext(), "Internet is not avialable", Toast.LENGTH_LONG).show();
+                }
             }
         };
 

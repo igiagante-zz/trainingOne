@@ -20,43 +20,37 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 
     private int current_page = 0;
 
-    private Context context;
-
     private LinearLayoutManager mLinearLayoutManager;
 
-    public EndlessRecyclerOnScrollListener(LinearLayoutManager linearLayoutManager, Context context) {
+    public EndlessRecyclerOnScrollListener(LinearLayoutManager linearLayoutManager) {
         this.mLinearLayoutManager = linearLayoutManager;
-        this.context = context;
     }
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
 
-        if(!Connection.checkInternet(context)){
-            Toast.makeText(context, "Internet is not avialable", Toast.LENGTH_SHORT).show();
-        }else{
-            visibleItemCount = recyclerView.getChildCount();
-            totalItemCount = mLinearLayoutManager.getItemCount();
-            firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
+        visibleItemCount = recyclerView.getChildCount();
+        totalItemCount = mLinearLayoutManager.getItemCount();
+        firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
 
-            if (loading) {
-                if (totalItemCount > previousTotalItemCount) {
-                    Log.d("totalItemCount", String.valueOf(totalItemCount));
-                    Log.d("previousTotal", String.valueOf(previousTotalItemCount));
+        if (loading) {
+            if (totalItemCount > previousTotalItemCount) {
+                Log.d("totalItemCount", String.valueOf(totalItemCount));
+                Log.d("previousTotal", String.valueOf(previousTotalItemCount));
 
-                    loading = false;
-                    previousTotalItemCount = totalItemCount;
-                }
-            }
-
-            if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-                Log.d("onScrolled", "onLoadMore(current_page)");
-                onLoadMore(current_page);
-                loading = true;
-                current_page++;
+                loading = false;
+                previousTotalItemCount = totalItemCount;
             }
         }
+
+        if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+            Log.d("onScrolled", "onLoadMore(current_page)");
+            onLoadMore(current_page);
+            loading = true;
+            current_page++;
+        }
+
     }
 
     public abstract void onLoadMore(int current_page);
