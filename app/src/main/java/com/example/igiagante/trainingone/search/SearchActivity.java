@@ -1,4 +1,4 @@
-package com.example.igiagante.trainingone;
+package com.example.igiagante.trainingone.search;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,6 +17,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.igiagante.trainingone.ListItemsActivity;
+import com.example.igiagante.trainingone.R;
+
 import connections.Connection;
 import services.SearchService;
 
@@ -27,6 +30,8 @@ public class SearchActivity extends Activity {
     private StringBuilder queryList; //String list with comma
     private String [] queries; //list
     private ArrayAdapter<String> adapter;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
