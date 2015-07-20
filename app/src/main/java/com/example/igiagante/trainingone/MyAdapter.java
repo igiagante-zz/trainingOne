@@ -2,7 +2,6 @@ package com.example.igiagante.trainingone;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -13,14 +12,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
+import com.example.igiagante.trainingone.item.ItemActivity;
 
 import java.util.ArrayList;
 
 import connections.Connection;
 import imageloader.ImageLoader;
 import model.Item;
-import services.ItemService;
 
 /**
  * Created by igiagante on 29/6/15.
@@ -62,7 +60,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
     @Override
     public MyAdapter.ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item_view, parent, false);
         // set the view's size, margins, paddings and layout parameters
         return new ItemViewHolder(v);
     }

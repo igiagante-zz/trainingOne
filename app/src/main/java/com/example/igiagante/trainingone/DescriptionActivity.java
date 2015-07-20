@@ -3,7 +3,8 @@ package com.example.igiagante.trainingone;
 import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebView;
-import android.widget.TextView;
+
+import com.example.igiagante.trainingone.item.ItemActivity;
 
 import model.Item;
 
