@@ -7,17 +7,28 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.example.igiagante.trainingone.DescriptionActivity;
+import com.example.igiagante.trainingone.MyAdapter;
 import com.example.igiagante.trainingone.R;
 
+import connections.Connection;
+import model.Item;
 import model.Search;
 import services.SearchService;
 
 
-public class ListItemsActivity extends Activity implements ListItemsFragment.ListItemsListener{
+public class ListItemsActivity extends Activity implements ListItemsFragment.ListItemsListener,
+        MyAdapter.OnItemSelectedListener, ItemDetailFragment.ItemDetailListener
+{
 
     private Integer limit = 10;
     private ListItemsFragment listItemsFragment;
+    private ItemDetailFragment itemDetailFragment;
+    private boolean mTwoPane;
+
+    public static final String ITEM_PARAM = "ITEM_PARAM";
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
 
@@ -28,7 +39,7 @@ public class ListItemsActivity extends Activity implements ListItemsFragment.Lis
                 if(intent.getAction().equals(SearchService.NOTIFICATION)){
                     Search search = (Search) bundle.getParcelable(SearchService.RESULT);
                     if (search != null) {
-                        listItemsFragment = (ListItemsFragment) getFragmentManager().findFragmentByTag("fragment_list_items");
+                        listItemsFragment = (ListItemsFragment) getFragmentManager().findFragmentById(R.id.list_items);
                         if(listItemsFragment != null){
                             listItemsFragment.addMoreItems(search.getItems());
                         }
@@ -45,15 +56,10 @@ public class ListItemsActivity extends Activity implements ListItemsFragment.Lis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_items);
 
-        Log.d("start", "ListItemsActivity");
+        itemDetailFragment = (ItemDetailFragment) getFragmentManager().findFragmentById(R.id.item_detail);
 
-        listItemsFragment = (ListItemsFragment) getFragmentManager().findFragmentByTag("fragment_list_items");
-
-        if(listItemsFragment == null){
-            Log.d("fragment", "is not null");
-            listItemsFragment = new ListItemsFragment();
-            getFragmentManager().beginTransaction().add(R.id.container_list_items, listItemsFragment, "fragment_list_items").commit();
-            Log.d("fragment", "readey");
+        if (itemDetailFragment != null) {
+            mTwoPane = true;
         }
     }
 
@@ -67,6 +73,29 @@ public class ListItemsActivity extends Activity implements ListItemsFragment.Lis
         getData(offset, String.valueOf(limit));
     }
 
+
+    @Override
+    public void itemSelected(Item item) {
+        if(mTwoPane){
+            itemDetailFragment = (ItemDetailFragment) getFragmentManager().findFragmentById(R.id.item_detail);
+            itemDetailFragment.setItem(item);
+        }else{
+            if(Connection.checkInternet(this)){
+                Intent intent = new Intent(this, ItemActivity.class);
+                intent.putExtra(ItemActivity.ITEM_PARAM, item);
+                startActivity(intent);
+            }else{
+                Toast.makeText(this, "Internet is not avialable", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    public void getItemDescription(Item item) {
+        Intent intent = new Intent(this, DescriptionActivity.class);
+        intent.putExtra(ITEM_PARAM, item);
+        startActivity(intent);
+    }
 
     @Override
     protected void onResume() {

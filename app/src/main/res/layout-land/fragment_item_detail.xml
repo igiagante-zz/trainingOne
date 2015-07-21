@@ -2,14 +2,14 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/container_item_detail">
+    android:background="@color/yellow"
+    android:layout_height="fill_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/yellow">
+        android:layout_height="wrap_content"
+        >
 
         <TextView
             android:id="@+id/item_title"
@@ -17,15 +17,15 @@
             android:layout_height="wrap_content"
             android:text="Title"
             android:maxLines="2"
-            android:padding="10dp"
+            android:padding="15dp"
             android:textColor="#222"
-            android:textSize="15sp"
+            android:textSize="20sp"
             android:elevation="2sp"
             android:typeface="sans"
             android:layout_gravity="center"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="12dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="50dp"
             android:background="@drawable/back"/>
 
         <RelativeLayout
@@ -34,10 +34,10 @@
 
             <ImageView
                 android:id="@+id/item_image"
-                android:layout_width="600dp"
-                android:layout_height="300dp"
+                android:layout_width="650dp"
+                android:layout_height="350dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="100dp"
                 android:layout_marginBottom="12dp"
                 android:contentDescription="@string/item_image"
                 android:src="@drawable/placeholder"
@@ -58,8 +58,12 @@
             android:id="@+id/item_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="100dp"
+            android:layout_marginBottom="20dp"
             android:text="Description"
+            android:padding="20dp"
             android:textSize="20sp"
             android:background="@drawable/back"/>
 

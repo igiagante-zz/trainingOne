@@ -1,7 +1,6 @@
 package com.example.igiagante.trainingone;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -10,13 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.igiagante.trainingone.item.ItemActivity;
+import com.example.igiagante.trainingone.item.ListItemsFragment;
 
 import java.util.ArrayList;
 
-import connections.Connection;
 import imageloader.ImageLoader;
 import model.Item;
 
@@ -27,6 +24,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
 
     private ArrayList<Item> items;
     private Context context;
+    private OnItemSelectedListener onItemSelectedListener;
 
     // inner class to hold a reference to each card_view of RecyclerView
     public class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -45,13 +43,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
             txtTittle = (TextView) v.findViewById(R.id.title);
             txtPrice = (TextView) v.findViewById(R.id.price);
             shippingIcon = (ImageView) v.findViewById(R.id.shippingYes);
+            cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Item item = items.get(getAdapterPosition());
+                    onItemSelectedListener.itemSelected(item);
+                }
+            });
         }
     }
 
+    public interface OnItemSelectedListener {
+        void itemSelected(Item item);
+    }
+
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(ArrayList<Item> items, Context context) {
+    public MyAdapter(ArrayList<Item> items, Context context, OnItemSelectedListener onItemSelectedListener) {
         this.context = context;
         this.items = items;
+        this.onItemSelectedListener = onItemSelectedListener;
         ImageLoader.INSTANCE.setPlaceholder(BitmapFactory.decodeResource(
                 context.getResources(), R.drawable.placeholder));
     }
@@ -67,19 +77,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
 
     @Override
     public void onBindViewHolder(ItemViewHolder itemViewHolder, final int position) {
-
-        itemViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(Connection.checkInternet(v.getContext())){
-                    Intent intent = new Intent(v.getContext(), ItemActivity.class);
-                    intent.putExtra(ItemActivity.ITEM_PARAM, items.get(position));
-                    v.getContext().startActivity(intent);
-                }else{
-                    Toast.makeText(context, "Internet is not avialable", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
 
         itemViewHolder.itemId = items.get(position).getItemId();
         itemViewHolder.imageView.setTag(items.get(position).getThumbnail());

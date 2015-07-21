@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import com.example.igiagante.trainingone.DescriptionActivity;
@@ -24,18 +25,6 @@ public class ItemActivity extends Activity implements ItemDetailFragment.ItemDet
 
     public static final String ITEM_PARAM = "ITEM_PARAM";
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            if(intent.getAction().equals(ItemService.NOTIFICATION_ITEM_READY)){
-                item = intent.getParcelableExtra(ItemService.ITEM);
-                itemDetailFragment = (ItemDetailFragment) getFragmentManager().findFragmentByTag("fragment_item_detail");
-                itemDetailFragment.setItem(item);
-            }
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,14 +43,12 @@ public class ItemActivity extends Activity implements ItemDetailFragment.ItemDet
         if (bundle != null) {
             item = (Item) bundle.getParcelable(ITEM_PARAM);
         }
-        addItemExtraData(item);
     }
 
-    private void addItemExtraData(Item item){
-        Intent intentService = new Intent(this, ItemService.class);
-        intentService.setAction(ItemService.ACTION_GET_ITEM);
-        intentService.putExtra(ItemService.ITEM, item);
-        startService(intentService);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        itemDetailFragment.setItem(item);
     }
 
     @Override
@@ -69,17 +56,5 @@ public class ItemActivity extends Activity implements ItemDetailFragment.ItemDet
         Intent intent = new Intent(this, DescriptionActivity.class);
         intent.putExtra(ITEM_PARAM, item);
         startActivity(intent);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(receiver, new IntentFilter(ItemService.NOTIFICATION_ITEM_READY));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(receiver);
     }
 }
