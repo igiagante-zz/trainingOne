@@ -143,8 +143,9 @@ public class SearchService extends IntentService {
                 String thumbnail = itemJson.getString("thumbnail");
                 JSONObject shippingJson = itemJson.getJSONObject("shipping");
                 Boolean shipping = shippingJson.getBoolean("free_shipping");
+                String expirationDate = itemJson.getString("stop_time");
 
-                items.add(new Item(itemId, title, price, thumbnail, shipping));
+                items.add(new Item(itemId, title, price, thumbnail, shipping, expirationDate));
             }
 
             search.setItems(items);

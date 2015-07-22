@@ -9,9 +9,12 @@
     <string name="title_description">Item Description</string>
 
     <string name="item_image">Item Image</string>
+    <string name="check_box_traking">Track this Item</string>
 
     <color name="text_shadow">#7F000000</color>
     <color name="text_shadow_white">#FFFFFF</color>
+
+
 
     <string-array name="countries_array">
         <item>Afghanistan</item>

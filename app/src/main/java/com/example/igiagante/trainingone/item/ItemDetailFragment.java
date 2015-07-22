@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.example.igiagante.trainingone.DescriptionActivity;
 import com.example.igiagante.trainingone.R;
 
+import dao.ItemDao;
 import imageloader.ImageLoader;
 import model.Item;
 import services.ItemService;
@@ -29,11 +31,13 @@ import services.ItemService;
 public class ItemDetailFragment extends Fragment {
 
     private Item item;
+    private ItemDao itemDao;
 
     static final String ITEM_PARAM = "ITEM_PARAM";
 
     private ItemDetailListener itemDetailListener;
     private ImageView imageView;
+    private CheckBox checkBoxTracking;
     private TextView textView;
     private ProgressBar pb;
     private Button button;
@@ -41,6 +45,7 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        itemDao = new ItemDao(getActivity());
     }
 
     @Nullable
@@ -53,6 +58,7 @@ public class ItemDetailFragment extends Fragment {
         pb = (ProgressBar) containerView.findViewById(R.id.item_progress_bar);
         pb.setVisibility(View.INVISIBLE);
         imageView = (ImageView) containerView.findViewById(R.id.item_image);
+        checkBoxTracking = (CheckBox) containerView.findViewById(R.id.checkbox_tracking);
         textView = (TextView) containerView.findViewById(R.id.item_title);
         button = (Button) containerView.findViewById(R.id.item_button);
 
@@ -68,6 +74,23 @@ public class ItemDetailFragment extends Fragment {
             }
         });
 
+        checkBoxTracking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(checkBoxTracking.isChecked()){
+                    //start traking item
+                    itemDao.open();
+                    itemDao.createItem(item);
+                    itemDao.close();
+                }else{
+                    //stop traking item
+                    itemDao.open();
+                    itemDao.deleteItem(item);
+                    itemDao.close();
+                }
+            }
+        });
+
         return containerView;
     }
 
@@ -79,6 +102,11 @@ public class ItemDetailFragment extends Fragment {
                 item = intent.getParcelableExtra(ItemService.ITEM);
                 ImageLoader.INSTANCE.displayImage(item.getImageUrl(), imageView, true);
                 textView.setText(item.getTitle());
+                itemDao.open();
+                if(itemDao.exist(item.getItemId())){
+                    checkBoxTracking.setChecked(true);
+                }
+                itemDao.close();
                 initComponents();
             }
         }
@@ -87,6 +115,8 @@ public class ItemDetailFragment extends Fragment {
     private void initComponents(){
         textView.setVisibility(View.VISIBLE);
         imageView.setVisibility(View.VISIBLE);
+        checkBoxTracking.setVisibility(View.VISIBLE);
+        checkBoxTracking.setChecked(false);
         button.setVisibility(View.VISIBLE);
         button.setEnabled(true);
         pb.setVisibility(View.INVISIBLE);
@@ -95,6 +125,7 @@ public class ItemDetailFragment extends Fragment {
     private void hideComponents(){
         textView.setVisibility(View.INVISIBLE);
         imageView.setVisibility(View.INVISIBLE);
+        checkBoxTracking.setVisibility(View.INVISIBLE);
         button.setVisibility(View.INVISIBLE);
         button.setEnabled(false);
     }
@@ -129,7 +160,7 @@ public class ItemDetailFragment extends Fragment {
 
     private void addItemExtraData(Item item){
         Intent intentService = new Intent(getActivity(), ItemService.class);
-        intentService.setAction(ItemService.ACTION_GET_ITEM);
+        intentService.setAction(ItemService.ACTION_ADD_EXTRA_DATA);
         intentService.putExtra(ItemService.ITEM, item);
         getActivity().startService(intentService);
     }

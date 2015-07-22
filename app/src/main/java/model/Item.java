@@ -9,6 +9,7 @@ import android.util.Log;
  */
 public class Item implements Parcelable {
 
+    private long id;
     private String itemId;
     private String title;
     private String price;
@@ -16,17 +17,43 @@ public class Item implements Parcelable {
     private String imageUrl;
     private Boolean shipping;
     private String description;
+    private String expirationDate;
 
-    public Item(String itemId, String title, String price, String thumbnail, Boolean shipping) {
+    public Item(){
+
+    }
+
+    public Item(String itemId, String title, String price, String thumbnail, Boolean shipping, String expirationDate) {
         this.itemId = itemId;
         this.title = title;
         this.price = price;
         this.thumbnail = thumbnail;
         this.shipping = shipping;
+        this.expirationDate = expirationDate;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public void setExpirationDate(String expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     public String getItemId() {
@@ -57,6 +84,10 @@ public class Item implements Parcelable {
         return description;
     }
 
+    public String getExpirationDate() {
+        return expirationDate;
+    }
+
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
@@ -79,6 +110,7 @@ public class Item implements Parcelable {
         dest.writeString(imageUrl);
         dest.writeInt(shipping ? 1 : 0);
         dest.writeString(description);
+        dest.writeString(expirationDate);
     }
 
     public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
@@ -99,5 +131,6 @@ public class Item implements Parcelable {
         imageUrl = in.readString();
         shipping = in.readInt() == 1;
         description = in.readString();
+        expirationDate = in.readString();
     }
 }
