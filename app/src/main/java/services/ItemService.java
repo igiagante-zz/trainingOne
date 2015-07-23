@@ -173,8 +173,8 @@ public class ItemService extends IntentService {
         String itemId = itemDB.getItemId();
         String itemIdRequest = item.getItemId();
 
-        Log.d("Check", "item " +  itemId + "is being checked");
-        Log.d("Request", "item from request with" +  itemIdRequest + "is being checked");
+        Log.d("Check", "item " +  itemId + " is being checked");
+        Log.d("Request", "item from request with" +  itemIdRequest + " is being checked");
 
         boolean priceChanged = itemDB.getPrice().equals(item.getPrice());
         boolean dateChanged = itemDB.getExpirationDate().equals(item.getExpirationDate());

@@ -51,6 +51,9 @@ public class ItemDao {
         values.put(MySQLiteHelper.COLUMN_EXPIRATION_DATE, item.getExpirationDate());
 
         long insertId = database.insert(MySQLiteHelper.TABLE_ITEMS, null, values);
+
+        Log.d("INSERT", "Item added with id: " + insertId);
+
         Cursor cursor = database.query(MySQLiteHelper.TABLE_ITEMS,
                 allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
                 null, null, null);
@@ -64,10 +67,12 @@ public class ItemDao {
     }
 
     public void deleteItem(Item item) {
+        this.open();
         long id = item.getId();
-        System.out.println("Comment deleted with id: " + id);
+        Log.d("DELETE", "Item deleted with id: " + id);
         database.delete(MySQLiteHelper.TABLE_ITEMS, MySQLiteHelper.COLUMN_ID
                 + " = " + id, null);
+        this.close();
     }
 
     public Item getItem(String itemId){
