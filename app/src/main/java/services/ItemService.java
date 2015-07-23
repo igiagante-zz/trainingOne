@@ -1,8 +1,14 @@
 package services;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.util.Log;
+
+import com.example.igiagante.trainingone.R;
+import com.example.igiagante.trainingone.item.ItemActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,10 +17,16 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import dao.ItemDao;
-import utils.HttpClient;
 import model.Item;
+import utils.HttpClient;
 
 /**
  * Created by igiagante on 10/7/15.
@@ -22,7 +34,10 @@ import model.Item;
 public class ItemService extends IntentService {
 
     private Item item;
+    private List<Item> items;
     private ItemDao itemDao;
+    private Map<String, Item> itemsChanged = new HashMap<>();
+    private Map<String, String> itemsChangedMessages = new HashMap<>();
 
     // TODO: Rename parameters
     public static final String ITEM = "ITEM";
@@ -30,14 +45,21 @@ public class ItemService extends IntentService {
 
     // TODO: Rename actions, choose action names that describe tasks that this
     public static final String ACTION_ADD_EXTRA_DATA = "ACTION_ADD_EXTRA_DATA";
-    public static final String ACTION_GET_ITEM = "ACTION_GET_ITEM";
+    public static final String ACTION_CHECK_ITEM = "ACTION_CHECK_ITEM";
 
     //Notificacions
     public static final String NOTIFICATION_ITEM_READY = "ITEM_READY";
 
+    public static final String PRICE_MODIFIED = "The price of the product has changed.";
+    public static final String EXPIRTATION_DATE_MODIFIED = "The expiration date of the product has changed.";
+    public static final String ALL_MODIFIED = "Price and expiration date of the product have changed.";
+
+    public static final int NOTIFICATION_ID_ITEM_CHANGED = 0;
+
     public ItemService() {
         super("ItemService");
         itemDao = new ItemDao(this);
+        items = new ArrayList<>();
     }
 
     @Override
@@ -51,10 +73,8 @@ public class ItemService extends IntentService {
                 setDescription(item);
                 publishResults(item);
             }
-            if(ACTION_GET_ITEM.equals(action)){
-                String itemId = intent.getStringExtra(ITEM_ID);
-                JSONObject resultObject = getItem(itemId);
-                item = parseJson(resultObject);
+            if(ACTION_CHECK_ITEM.equals(action)){
+                checkItems();
             }
         }
     }
@@ -115,8 +135,15 @@ public class ItemService extends IntentService {
         Item item = new Item();
         try{
             item.setItemId(resultObject.getString("id"));
+            item.setTitle(resultObject.getString("title"));
+
+            //Wrong parse on purpose to get false matching prices
             item.setPrice(resultObject.getString("price"));
+
             item.setExpirationDate(resultObject.getString("stop_time"));
+            JSONObject shippingJson = resultObject.getJSONObject("shipping");
+            item.setShipping(shippingJson.getBoolean("free_shipping"));
+            item.setThumbnail(resultObject.getString("thumbnail"));
         }catch (JSONException e) {
             e.printStackTrace();
         }
@@ -124,17 +151,77 @@ public class ItemService extends IntentService {
         return item;
     }
 
-    private String checkPrice(){
-        Item itemDB = itemDao.getItem(item.getItemId());
-        if(!item.getPrice().equals(itemDB.getPrice()))
-            return "Price was modified";
-        return "";
+    private void checkItems(){
+        items = itemDao.getAllItems();
+
+        for(Item itemDB : items){
+            JSONObject resultObject = getItem(itemDB.getItemId());
+            Item itemFromRequest = parseJson(resultObject);
+            checkItem(itemDB, itemFromRequest);
+        }
+
+        if(!itemsChanged.isEmpty()){
+            for(Item item : items){
+                //get itemId from database item
+                sendNotification(item.getItemId());
+            }
+        }
     }
 
-    private String checkExpirationDate(){
-        Item itemDB = itemDao.getItem(item.getItemId());
-        if(!item.getExpirationDate().equals(itemDB.getExpirationDate()))
-            return "Expiration Date was modified";
-        return "";
+    private void checkItem(Item itemDB, Item item){
+
+        String itemId = itemDB.getItemId();
+        String itemIdRequest = item.getItemId();
+
+        Log.d("Check", "item " +  itemId + "is being checked");
+        Log.d("Request", "item from request with" +  itemIdRequest + "is being checked");
+
+        boolean priceChanged = itemDB.getPrice().equals(item.getPrice());
+        boolean dateChanged = itemDB.getExpirationDate().equals(item.getExpirationDate());
+
+        if(!priceChanged){
+            itemsChangedMessages.put(item.getItemId(), PRICE_MODIFIED);
+            itemsChanged.put(item.getItemId(), item);
+            if(!dateChanged){
+                itemsChangedMessages.put(item.getItemId(), ALL_MODIFIED);
+                itemsChanged.put(item.getItemId(), item);
+            }
+        }else if(!dateChanged){
+            itemsChangedMessages.put(item.getItemId(), EXPIRTATION_DATE_MODIFIED);
+            itemsChanged.put(item.getItemId(), item);
+        }
     }
+
+    private void sendNotification(String itemId){
+
+        Item itemUpdated = itemsChanged.get(itemId);
+
+        // Prepare intent which is triggered if the
+        // notification is selected
+        Intent intent = new Intent(this, ItemActivity.class);
+        intent.putExtra(ItemActivity.ITEM_PARAM, itemsChanged.get(itemId));
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        String msg = itemsChangedMessages.get(itemId);
+
+        // Build notification
+        // Actions are just fake
+        Notification notification = new Notification.Builder(this)
+                .setContentTitle("Product New Info")
+                .setContentText(msg).setSmallIcon(R.drawable.icon_notification)
+                .setContentIntent(pIntent).build();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // hide the notification after its selected
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        notificationManager.notify(NOTIFICATION_ID_ITEM_CHANGED, notification);
+
+        //Fake
+        Locale locale = new Locale("ar", "AR");
+        NumberFormat format = NumberFormat.getCurrencyInstance(locale);
+        itemUpdated.setPrice(format.getCurrency() + " " + itemUpdated.getPrice());
+
+        itemDao.updateItem(itemUpdated.getItemId(), itemUpdated.getPrice(), itemUpdated.getExpirationDate());
+    }
+
 }

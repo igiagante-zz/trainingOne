@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,8 @@ public class ItemDao {
 
     public Item createItem(Item item) {
 
+        this.open();
+
         ContentValues values = new ContentValues();
 
         values.put(MySQLiteHelper.COLUMN_ID, item.getId());
@@ -54,6 +57,9 @@ public class ItemDao {
         cursor.moveToFirst();
         Item newItem = cursorToItem(cursor);
         cursor.close();
+
+        this.close();
+
         return newItem;
     }
 
@@ -65,15 +71,45 @@ public class ItemDao {
     }
 
     public Item getItem(String itemId){
+
+        this.open();
+
         String[] args = new String[] {itemId};
         Cursor cursor = database.rawQuery(" SELECT _id, item_id, price, stop_time FROM Items WHERE item_id=? ", args);
         cursor.moveToFirst();
         Item item = cursorToItem(cursor);
         cursor.close();
+
+        this.close();
+
         return item;
     }
 
+    public int updateItem(String itemId, String price, String date){
+
+        int update = 99;
+        ContentValues cv = new ContentValues();
+        if(price != null)
+            cv.put(MySQLiteHelper.COLUMN_PRICE, price);
+        if(date != null)
+            cv.put(MySQLiteHelper.COLUMN_EXPIRATION_DATE, date);
+
+        if(getItem(itemId) != null){
+            this.open();
+            String[] args = new String[] {itemId};
+            update = database.update(MySQLiteHelper.TABLE_ITEMS, cv, MySQLiteHelper.COLUMN_ITEM_ID+"=?" , args);
+            this.close();
+        }else{
+            Log.d("Info", "Item is not in the database");
+        }
+
+        return update;
+    }
+
     public List<Item> getAllItems() {
+
+        this.open();
+
         List<Item> items = new ArrayList<Item>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_ITEMS,
@@ -87,13 +123,20 @@ public class ItemDao {
         }
         // make sure to close the cursor
         cursor.close();
+        this.close();
+
         return items;
     }
 
     public boolean exist(String itemId){
+
+        this.open();
         String[] args = new String[] {itemId};
         Cursor cursor = database.rawQuery(" SELECT _id, item_id, price, stop_time FROM Items WHERE item_id=? ", args);
-        return cursor.getCount() == 1;
+        boolean exist = cursor.getCount() == 1;
+        cursor.close();
+        this.close();
+        return exist;
     }
 
     private Item cursorToItem(Cursor cursor) {

@@ -44,5 +44,14 @@
             android:exported="false" >
         </service>
 
+        <receiver android:name="TrakingReceiver">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED">
+                </action>
+            </intent-filter>
+
+        </receiver>
+
     </application>
 </manifest>

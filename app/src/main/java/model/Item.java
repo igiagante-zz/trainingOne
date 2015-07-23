@@ -52,6 +52,14 @@ public class Item implements Parcelable {
         this.price = price;
     }
 
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public void setShipping(Boolean shipping) {
+        this.shipping = shipping;
+    }
+
     public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
     }

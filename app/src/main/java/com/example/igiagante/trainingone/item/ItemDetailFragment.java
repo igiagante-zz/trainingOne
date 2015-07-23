@@ -79,14 +79,10 @@ public class ItemDetailFragment extends Fragment {
             public void onClick(View v) {
                 if(checkBoxTracking.isChecked()){
                     //start traking item
-                    itemDao.open();
                     itemDao.createItem(item);
-                    itemDao.close();
                 }else{
                     //stop traking item
-                    itemDao.open();
                     itemDao.deleteItem(item);
-                    itemDao.close();
                 }
             }
         });
@@ -102,11 +98,11 @@ public class ItemDetailFragment extends Fragment {
                 item = intent.getParcelableExtra(ItemService.ITEM);
                 ImageLoader.INSTANCE.displayImage(item.getImageUrl(), imageView, true);
                 textView.setText(item.getTitle());
-                itemDao.open();
+
                 if(itemDao.exist(item.getItemId())){
                     checkBoxTracking.setChecked(true);
                 }
-                itemDao.close();
+
                 initComponents();
             }
         }
@@ -116,7 +112,6 @@ public class ItemDetailFragment extends Fragment {
         textView.setVisibility(View.VISIBLE);
         imageView.setVisibility(View.VISIBLE);
         checkBoxTracking.setVisibility(View.VISIBLE);
-        checkBoxTracking.setChecked(false);
         button.setVisibility(View.VISIBLE);
         button.setEnabled(true);
         pb.setVisibility(View.INVISIBLE);
