@@ -79,7 +79,7 @@ public class ItemDetailFragment extends Fragment {
             public void onClick(View v) {
                 if(checkBoxTracking.isChecked()){
                     //start traking item
-                    itemDao.createItem(item);
+                    itemDao.createItem(item, true);
                 }else{
                     //stop traking item
                     itemDao.deleteItem(item);

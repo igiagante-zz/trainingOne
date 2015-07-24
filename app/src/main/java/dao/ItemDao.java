@@ -39,7 +39,7 @@ public class ItemDao {
         dbHelper.close();
     }
 
-    public Item createItem(Item item) {
+    public Item createItem(Item item, boolean fake) {
 
         this.open();
 
@@ -47,7 +47,13 @@ public class ItemDao {
 
         values.put(MySQLiteHelper.COLUMN_ID, item.getId());
         values.put(MySQLiteHelper.COLUMN_ITEM_ID, item.getItemId());
-        values.put(MySQLiteHelper.COLUMN_PRICE, item.getPrice());
+
+        if(fake){
+            values.put(MySQLiteHelper.COLUMN_PRICE, item.getPrice() + "fake");
+        }else{
+            values.put(MySQLiteHelper.COLUMN_PRICE, item.getPrice());
+        }
+
         values.put(MySQLiteHelper.COLUMN_EXPIRATION_DATE, item.getExpirationDate());
 
         long insertId = database.insert(MySQLiteHelper.TABLE_ITEMS, null, values);

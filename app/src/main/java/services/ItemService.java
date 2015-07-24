@@ -56,6 +56,8 @@ public class ItemService extends IntentService {
 
     public static final int NOTIFICATION_ID_ITEM_CHANGED = 0;
 
+    private boolean fake = false;
+
     public ItemService() {
         super("ItemService");
         itemDao = new ItemDao(this);
@@ -137,8 +139,9 @@ public class ItemService extends IntentService {
             item.setItemId(resultObject.getString("id"));
             item.setTitle(resultObject.getString("title"));
 
-            //Wrong parse on purpose to get false matching prices
-            item.setPrice(resultObject.getString("price"));
+            Locale locale = new Locale("ar", "AR");
+            NumberFormat format = NumberFormat.getCurrencyInstance(locale);
+            item.setPrice(format.getCurrency() + " " + resultObject.getString("price"));
 
             item.setExpirationDate(resultObject.getString("stop_time"));
             JSONObject shippingJson = resultObject.getJSONObject("shipping");
@@ -199,7 +202,7 @@ public class ItemService extends IntentService {
         // Prepare intent which is triggered if the
         // notification is selected
         Intent intent = new Intent(this, ItemActivity.class);
-        intent.putExtra(ItemActivity.ITEM_PARAM, itemsChanged.get(itemId));
+        intent.putExtra(ItemActivity.ITEM_PARAM, itemUpdated);
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         String msg = itemsChangedMessages.get(itemId);
@@ -215,11 +218,6 @@ public class ItemService extends IntentService {
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         notificationManager.notify(NOTIFICATION_ID_ITEM_CHANGED, notification);
-
-        //Fake
-        Locale locale = new Locale("ar", "AR");
-        NumberFormat format = NumberFormat.getCurrencyInstance(locale);
-        itemUpdated.setPrice(format.getCurrency() + " " + itemUpdated.getPrice());
 
         itemDao.updateItem(itemUpdated.getItemId(), itemUpdated.getPrice(), itemUpdated.getExpirationDate());
     }
