@@ -43,6 +43,10 @@
             android:name="services.ItemService"
             android:exported="false" >
         </service>
+        <service
+            android:name="dao.ItemDao"
+            android:exported="false" >
+        </service>
 
         <receiver android:name="TrakingReceiver">
 

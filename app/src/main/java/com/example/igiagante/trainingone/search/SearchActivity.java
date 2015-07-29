@@ -19,7 +19,7 @@ import services.SearchService;
 public class SearchActivity extends Activity implements SearchFragment.SearchFragmentListener{
 
     private PendingIntent pendingIntent;
-    private static final long REPEAT_TIME = 1000 * 10;
+    private static final long REPEAT_TIME = 1000 * 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

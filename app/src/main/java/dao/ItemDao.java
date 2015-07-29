@@ -19,24 +19,23 @@ public class ItemDao {
 
     // Database fields
     private SQLiteDatabase database;
-    private MySQLiteHelper dbHelper;
     private String[] allColumns = {
             MySQLiteHelper.COLUMN_ID,
             MySQLiteHelper.COLUMN_ITEM_ID,
             MySQLiteHelper.COLUMN_PRICE,
-            MySQLiteHelper.COLUMN_EXPIRATION_DATE};
+            MySQLiteHelper.COLUMN_EXPIRATION_DATE };
 
     public ItemDao(Context context) {
-        dbHelper = new MySQLiteHelper(context);
+        MySQLiteHelper dbHelper = new MySQLiteHelper(context);
+        DatabaseManager.initializeInstance(dbHelper);
     }
 
-
     public void open() throws SQLException {
-        database = dbHelper.getWritableDatabase();
+        database = DatabaseManager.getInstance().open();
     }
 
     public void close() {
-        dbHelper.close();
+        DatabaseManager.getInstance().close();
     }
 
     public Item createItem(Item item, boolean fake) {
@@ -45,7 +44,7 @@ public class ItemDao {
 
         ContentValues values = new ContentValues();
 
-        values.put(MySQLiteHelper.COLUMN_ID, item.getId());
+        //values.put(MySQLiteHelper.COLUMN_ID, item.getId());
         values.put(MySQLiteHelper.COLUMN_ITEM_ID, item.getItemId());
 
         if(fake){
@@ -74,10 +73,9 @@ public class ItemDao {
 
     public void deleteItem(Item item) {
         this.open();
-        long id = item.getId();
-        Log.d("DELETE", "Item deleted with id: " + id);
-        database.delete(MySQLiteHelper.TABLE_ITEMS, MySQLiteHelper.COLUMN_ID
-                + " = " + id, null);
+        String[] args = new String[] {item.getItemId()};
+        Log.d("DELETE", "Item deleted with item_id: " + item.getItemId());
+        database.delete(MySQLiteHelper.TABLE_ITEMS, MySQLiteHelper.COLUMN_ITEM_ID+"=?", args);
         this.close();
     }
 
@@ -108,7 +106,7 @@ public class ItemDao {
         if(getItem(itemId) != null){
             this.open();
             String[] args = new String[] {itemId};
-            update = database.update(MySQLiteHelper.TABLE_ITEMS, cv, MySQLiteHelper.COLUMN_ITEM_ID+"=?" , args);
+            update = database.update(MySQLiteHelper.TABLE_ITEMS, cv, MySQLiteHelper.COLUMN_ITEM_ID+"=?", args);
             this.close();
         }else{
             Log.d("Info", "Item is not in the database");

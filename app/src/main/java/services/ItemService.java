@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.igiagante.trainingone.R;
 import com.example.igiagante.trainingone.item.ItemActivity;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import connections.Connection;
 import dao.ItemDao;
 import model.Item;
 import utils.HttpClient;
@@ -76,7 +78,11 @@ public class ItemService extends IntentService {
                 publishResults(item);
             }
             if(ACTION_CHECK_ITEM.equals(action)){
-                checkItems();
+                if(Connection.checkInternet(this)){
+                    checkItems();
+                }else{
+                    Toast.makeText(this, "Internet is not avialable", Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
@@ -154,7 +160,7 @@ public class ItemService extends IntentService {
         return item;
     }
 
-    private void checkItems(){
+    private synchronized void checkItems(){
         items = itemDao.getAllItems();
 
         for(Item itemDB : items){
@@ -166,7 +172,9 @@ public class ItemService extends IntentService {
         if(!itemsChanged.isEmpty()){
             for(Item item : items){
                 //get itemId from database item
-                sendNotification(item.getItemId());
+                if(itemsChanged.containsKey(item.getItemId())){
+                    sendNotification(item.getItemId());
+                }
             }
         }
     }
@@ -177,7 +185,7 @@ public class ItemService extends IntentService {
         String itemIdRequest = item.getItemId();
 
         Log.d("Check", "item " +  itemId + " is being checked");
-        Log.d("Request", "item from request with" +  itemIdRequest + " is being checked");
+        Log.d("Request", "item from request with " +  itemIdRequest + " is being checked");
 
         boolean priceChanged = itemDB.getPrice().equals(item.getPrice());
         boolean dateChanged = itemDB.getExpirationDate().equals(item.getExpirationDate());
@@ -189,7 +197,9 @@ public class ItemService extends IntentService {
                 itemsChangedMessages.put(item.getItemId(), ALL_MODIFIED);
                 itemsChanged.put(item.getItemId(), item);
             }
-        }else if(!dateChanged){
+        }
+
+        if(!dateChanged){
             itemsChangedMessages.put(item.getItemId(), EXPIRTATION_DATE_MODIFIED);
             itemsChanged.put(item.getItemId(), item);
         }
@@ -199,27 +209,33 @@ public class ItemService extends IntentService {
 
         Item itemUpdated = itemsChanged.get(itemId);
 
-        // Prepare intent which is triggered if the
-        // notification is selected
-        Intent intent = new Intent(this, ItemActivity.class);
-        intent.putExtra(ItemActivity.ITEM_PARAM, itemUpdated);
-        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        if(itemUpdated != null){
+            // Prepare intent which is triggered if the
+            // notification is selected
+            Intent intent = new Intent(this, ItemActivity.class);
+            intent.putExtra(ItemActivity.ITEM_PARAM, itemUpdated);
+            PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-        String msg = itemsChangedMessages.get(itemId);
+            String msg = itemsChangedMessages.get(itemId);
 
-        // Build notification
-        // Actions are just fake
-        Notification notification = new Notification.Builder(this)
-                .setContentTitle("Product New Info")
-                .setContentText(msg).setSmallIcon(R.drawable.icon_notification)
-                .setContentIntent(pIntent).build();
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // hide the notification after its selected
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+            // Build notification
+            // Actions are just fake
+            Notification notification = new Notification.Builder(this)
+                    .setContentTitle("Product New Info")
+                    .setContentText(msg).setSmallIcon(R.drawable.icon_notification)
+                    .setContentIntent(pIntent).build();
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            // hide the notification after its selected
+            notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
-        notificationManager.notify(NOTIFICATION_ID_ITEM_CHANGED, notification);
+            notificationManager.notify(NOTIFICATION_ID_ITEM_CHANGED, notification);
 
-        itemDao.updateItem(itemUpdated.getItemId(), itemUpdated.getPrice(), itemUpdated.getExpirationDate());
+            Log.d("itemId", itemUpdated.getItemId());
+            Log.d("price", itemUpdated.getPrice());
+            Log.d("expirationDate", itemUpdated.getExpirationDate());
+
+            itemDao.updateItem(itemUpdated.getItemId(), itemUpdated.getPrice(), itemUpdated.getExpirationDate());
+            itemsChanged.remove(itemUpdated.getItemId());
+        }
     }
-
 }

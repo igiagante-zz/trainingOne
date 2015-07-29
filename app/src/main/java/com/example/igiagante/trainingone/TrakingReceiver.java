@@ -18,6 +18,5 @@ public class TrakingReceiver extends BroadcastReceiver {
         Intent intentService = new Intent(context, ItemService.class);
         intentService.setAction(ItemService.ACTION_CHECK_ITEM);
         context.startService(intentService);
-
     }
 }

@@ -16,10 +16,12 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.igiagante.trainingone.DescriptionActivity;
 import com.example.igiagante.trainingone.R;
 
+import connections.Connection;
 import dao.ItemDao;
 import imageloader.ImageLoader;
 import model.Item;
@@ -75,14 +77,22 @@ public class ItemDetailFragment extends Fragment {
         });
 
         checkBoxTracking.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                if(checkBoxTracking.isChecked()){
-                    //start traking item
-                    itemDao.createItem(item, true);
+
+                if(Connection.checkInternet(getActivity())){
+
+                    if(checkBoxTracking.isChecked()){
+                        //start traking item
+                        itemDao.createItem(item, true);
+                    }else {
+                        //stop traking item
+                        itemDao.deleteItem(item);
+                    }
+
                 }else{
-                    //stop traking item
-                    itemDao.deleteItem(item);
+                    Toast.makeText(getActivity(), "Internet is not avialable", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -95,12 +105,15 @@ public class ItemDetailFragment extends Fragment {
         @Override
         public void onReceive(final Context context, Intent intent) {
             if(intent.getAction().equals(ItemService.NOTIFICATION_ITEM_READY)){
+
                 item = intent.getParcelableExtra(ItemService.ITEM);
                 ImageLoader.INSTANCE.displayImage(item.getImageUrl(), imageView, true);
                 textView.setText(item.getTitle());
 
                 if(itemDao.exist(item.getItemId())){
                     checkBoxTracking.setChecked(true);
+                }else{
+                    checkBoxTracking.setChecked(false);
                 }
 
                 initComponents();
