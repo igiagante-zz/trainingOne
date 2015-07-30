@@ -5,8 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.igiagante.trainingone.DescriptionActivity;
@@ -56,11 +58,6 @@ public class ListItemsActivity extends Activity implements ListItemsFragment.Lis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_items);
 
-        itemDetailFragment = (ItemDetailFragment) getFragmentManager().findFragmentById(R.id.item_detail);
-
-        if (itemDetailFragment != null) {
-            mTwoPane = true;
-        }
     }
 
     @Override
@@ -72,7 +69,6 @@ public class ListItemsActivity extends Activity implements ListItemsFragment.Lis
     public void loadMoreItems(String offset) {
         getData(offset, String.valueOf(limit));
     }
-
 
     @Override
     public void itemSelected(Item item) {
@@ -101,6 +97,14 @@ public class ListItemsActivity extends Activity implements ListItemsFragment.Lis
     protected void onResume() {
         super.onResume();
         registerReceiver(receiver, new IntentFilter(SearchService.NOTIFICATION));
+
+        itemDetailFragment = (ItemDetailFragment) getFragmentManager().findFragmentById(R.id.item_detail);
+
+        if (itemDetailFragment == null || !itemDetailFragment.isInLayout()) {
+            mTwoPane = false;
+        }else{
+            mTwoPane = true;
+        }
     }
 
     @Override

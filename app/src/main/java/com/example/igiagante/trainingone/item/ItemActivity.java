@@ -1,19 +1,13 @@
 package com.example.igiagante.trainingone.item;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.os.Bundle;
 
 import com.example.igiagante.trainingone.DescriptionActivity;
 import com.example.igiagante.trainingone.R;
-import com.example.igiagante.trainingone.item.ItemDetailFragment;
 
 import model.Item;
-import services.ItemService;
 
 /**
  * Created by igiagante on 10/7/15.

@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.NumberFormat;
@@ -212,9 +213,16 @@ public class ItemService extends IntentService {
         if(itemUpdated != null){
             // Prepare intent which is triggered if the
             // notification is selected
+
+            Log.d("itemId", itemUpdated.getItemId());
+            Log.d("price", itemUpdated.getPrice());
+            Log.d("expirationDate", itemUpdated.getExpirationDate());
+
+            int ID = new BigDecimal(itemUpdated.getId()).intValueExact();
+
             Intent intent = new Intent(this, ItemActivity.class);
             intent.putExtra(ItemActivity.ITEM_PARAM, itemUpdated);
-            PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            PendingIntent pIntent = PendingIntent.getActivity(this, ID, intent, PendingIntent.FLAG_ONE_SHOT);
 
             String msg = itemsChangedMessages.get(itemId);
 
@@ -228,11 +236,7 @@ public class ItemService extends IntentService {
             // hide the notification after its selected
             notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
-            notificationManager.notify(NOTIFICATION_ID_ITEM_CHANGED, notification);
-
-            Log.d("itemId", itemUpdated.getItemId());
-            Log.d("price", itemUpdated.getPrice());
-            Log.d("expirationDate", itemUpdated.getExpirationDate());
+            notificationManager.notify(ID, notification);
 
             itemDao.updateItem(itemUpdated.getItemId(), itemUpdated.getPrice(), itemUpdated.getExpirationDate());
             itemsChanged.remove(itemUpdated.getItemId());

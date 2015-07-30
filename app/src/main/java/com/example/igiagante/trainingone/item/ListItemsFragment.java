@@ -126,7 +126,7 @@ public class ListItemsFragment extends Fragment {
         }
         this.items.addAll(items);
 
-        mAdapter.setItems(items);
+        mAdapter.setItems(this.items);
         mAdapter.notifyDataSetChanged();
         pb.setVisibility(View.INVISIBLE);
     }

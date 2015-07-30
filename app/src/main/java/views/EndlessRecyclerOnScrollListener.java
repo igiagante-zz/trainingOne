@@ -18,7 +18,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
     private int visibleThreshold = 5; // The minimum amount of items to have below your current scroll position before loading more.
     private int firstVisibleItem, visibleItemCount, totalItemCount;
 
-    private int current_page = 0;
+    private int current_page = 1;
 
     private LinearLayoutManager mLinearLayoutManager;
 
@@ -34,15 +34,24 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
         totalItemCount = mLinearLayoutManager.getItemCount();
         firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
 
-        if (loading) {
-            if (totalItemCount > previousTotalItemCount) {
-                Log.d("totalItemCount", String.valueOf(totalItemCount));
-                Log.d("previousTotal", String.valueOf(previousTotalItemCount));
+        //Log.d("totalItemCount", String.valueOf(totalItemCount));
+        //Log.d("previousTotal", String.valueOf(previousTotalItemCount));
 
+        if (loading) {
+            //Log.d("loading", "Must be true");
+            if (totalItemCount > previousTotalItemCount) {
+               // Log.d("total > previous", String.valueOf(totalItemCount > previousTotalItemCount));
                 loading = false;
                 previousTotalItemCount = totalItemCount;
             }
         }
+
+        boolean a = (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold);
+
+//        Log.d("loading", String.valueOf(loading));
+//        Log.d("total - visible", String.valueOf((totalItemCount - visibleItemCount)));
+//        Log.d("first + threshold", String.valueOf(firstVisibleItem + visibleThreshold));
+//        Log.d("a", String.valueOf(a));
 
         if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
             Log.d("onScrolled", "onLoadMore(current_page)");
@@ -50,7 +59,6 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
             loading = true;
             current_page++;
         }
-
     }
 
     public abstract void onLoadMore(int current_page);
