@@ -45,6 +45,13 @@ public class ListItemsActivity extends Activity implements ListItemsFragment.Lis
                         if(listItemsFragment != null){
                             listItemsFragment.addMoreItems(search.getItems());
                         }
+                        itemDetailFragment = (ItemDetailFragment) getFragmentManager().findFragmentById(R.id.item_detail);
+                        //set first item by default
+                        if(itemDetailFragment != null){
+                            if(itemDetailFragment.isInLayout()){
+                                itemDetailFragment.setItem(search.getItems().get(0));
+                            }
+                        }
                     } else {
                         Log.d("items", "not found");
                     }
@@ -100,7 +107,7 @@ public class ListItemsActivity extends Activity implements ListItemsFragment.Lis
 
         itemDetailFragment = (ItemDetailFragment) getFragmentManager().findFragmentById(R.id.item_detail);
 
-        if (itemDetailFragment == null || !itemDetailFragment.isInLayout()) {
+        if(itemDetailFragment == null || !itemDetailFragment.isInLayout()) {
             mTwoPane = false;
         }else{
             mTwoPane = true;

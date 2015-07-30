@@ -1,6 +1,7 @@
 package com.example.igiagante.trainingone;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -83,8 +84,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemViewHolder> {
         ImageLoader.INSTANCE.displayImage(items.get(position).getThumbnail(), itemViewHolder.imageView, false);
 
         //itemViewHolder.imageItem.setImageBitmap(bitmap);
-        itemViewHolder.txtTittle.setText(items.get(position).getTitle());
-        itemViewHolder.txtPrice.setText(items.get(position).getPrice());
+
+        if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            itemViewHolder.txtTittle.setText(items.get(position).getTitle());
+            itemViewHolder.txtPrice.setText(items.get(position).getPrice());
+        }
         if(items.get(position).getShipping()){
             itemViewHolder.shippingIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.shipping_yes));
         }

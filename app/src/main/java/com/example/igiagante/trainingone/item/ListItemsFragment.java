@@ -124,6 +124,7 @@ public class ListItemsFragment extends Fragment {
         if(this.items == null){
             this.items = new ArrayList<>();
         }
+        //concat the new items
         this.items.addAll(items);
 
         mAdapter.setItems(this.items);
